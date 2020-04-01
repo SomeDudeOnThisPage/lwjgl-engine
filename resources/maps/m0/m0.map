@@ -1,0 +1,30 @@
+name = "Test Map 01"
+
+physics = {
+  enabled = true
+  gravity = -9.81
+  max_dynamics = 500
+}
+
+objects = {
+  object = {
+    name = "sun"
+    components = {
+      directional_light_source = {
+        color = [1.0, 1.0, 1.0]
+        direction = [0.0, -1.0, -0.5]
+        clq = "constant_infinite"
+      }
+      transform = {
+        rotation = [0.0, 0.0, 0.0]
+        position = [0.0, 0.0, 0.0]
+        scale = 1.0
+      }
+      effect = {
+        type = skybox_effect
+        source = sunlight
+        shader = skybox_sun
+      }
+    }
+  }
+}

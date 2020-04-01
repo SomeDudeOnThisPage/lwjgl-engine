@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+    <deferred>
+        <!-- Perform Geometry Stage -->
+        <geometry/>
+        <lighting/>
+    </deferred>
+
+    <filters>
+        <filter file="filters/color_correction"/>
+    </filters>
+</pipeline>

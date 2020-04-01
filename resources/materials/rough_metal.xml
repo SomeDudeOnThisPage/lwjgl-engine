@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<material rendering="pbr">
+
+    <properties>
+        <transparency   value="false"                               />
+        <filter         value="texture_filter_trilinear"            />
+        <geometryshader value="$deferred.geometry"                  />
+    </properties>
+
+    <color      file="pbr.metal.metal_albedo"     format="srgb"     />
+    <normal     file="pbr.metal.metal_normal"                       />
+    <roughness  file="pbr.metal.metal_roughness"                    />
+    <metallic   file="pbr.metal.metal_metallic"                     />
+    <ao         file="pbr.metal.metal_ambient_occlusion"            />
+
+</material>
