@@ -39,7 +39,7 @@ public class EngineSettings
 
   public static int geti(String setting)
   {
-    if (setting.charAt(0) != 'i') { System.err.println("wrong setting type: expected integer"); return 0; }
+    //if (setting.charAt(0) != 'i') { System.err.println("wrong setting type: expected integer"); return 0; }
     return Integer.parseInt(EngineSettings.settings.get(setting));
   }
 }

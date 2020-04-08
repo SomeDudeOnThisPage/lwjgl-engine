@@ -16,6 +16,8 @@ public class Input
 
   private static boolean pressed = false;
 
+  private static boolean mouse = true;
+
   public static synchronized void initialize(Window windowObject)
   {
     window = windowObject.getWindow();
@@ -23,27 +25,30 @@ public class Input
     // set callbacks
     glfwSetMouseButtonCallback(window, (window, button, action, mods) ->
     {
-      if (button == GLFW_MOUSE_BUTTON_1)
+      if (Input.mouse)
       {
-        if (action == GLFW_PRESS)
+        if (button == GLFW_MOUSE_BUTTON_1)
         {
-          dragging = true;
+          if (action == GLFW_PRESS)
+          {
+            dragging = true;
+          }
+          else if (action == GLFW_RELEASE)
+          {
+            dragging = false;
+          }
         }
-        else if (action == GLFW_RELEASE)
-        {
-          dragging = false;
-        }
-      }
 
-      if (button == GLFW_MOUSE_BUTTON_2)
-      {
-        if (action == GLFW_PRESS)
+        if (button == GLFW_MOUSE_BUTTON_2)
         {
-          pressed = true;
-        }
-        else if (action == GLFW_RELEASE)
-        {
-          pressed = false;
+          if (action == GLFW_PRESS)
+          {
+            pressed = true;
+          }
+          else if (action == GLFW_RELEASE)
+          {
+            pressed = false;
+          }
         }
       }
     });
@@ -75,6 +80,23 @@ public class Input
     mouseLast = mouseNow;
     scroll.x = 0.0;
     scroll.y = 0.0;
+
+    Input.mouse = true;
+  }
+
+  public static void consumeMouse()
+  {
+    Input.mouse = false;
+  }
+
+  public static Vector2d getMovement()
+  {
+    if (Input.mouse)
+    {
+      return new Vector2d(mouseNow.x - mouseLast.x, mouseNow.y - mouseLast.y);
+    }
+
+    return new Vector2d(0.0, 0.0);
   }
 
   /**
@@ -83,7 +105,7 @@ public class Input
    */
   public static Vector2d getDrag()
   {
-    if (dragging)
+    if (dragging && Input.mouse)
     {
       return new Vector2d(mouseNow.x - mouseLast.x, mouseNow.y - mouseLast.y);
     }
@@ -93,7 +115,11 @@ public class Input
 
   public static Vector2d getScroll()
   {
-    return scroll;
+    if (Input.mouse)
+    {
+      return scroll;
+    }
+    return new Vector2d(0.0, 0.0);
   }
 
   public static boolean keyDown(int key)

@@ -9,10 +9,15 @@ import engine.core.gfx.filter.Filter;
 import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
 import engine.core.gfx.batching.DeferredMeshBatcher;
+import engine.core.gui.GUI;
+import engine.core.gui.Label;
 import engine.core.scene.Scene;
 import engine.core.scene.SceneManager;
 import engine.core.Window;
+import engine.util.Assimp;
 import engine.util.ExceptionDialog;
+import engine.util.settings.EngineInitialization;
+import engine.util.settings.Settings;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
@@ -35,7 +40,7 @@ public class Engine
   private static int cores;
 
   /** FPS count of last second. */
-  private static int FPS;
+  public static int FPS;
 
   /** UPS count of last run of update thread. */
   public static int UPS;
@@ -51,7 +56,11 @@ public class Engine
    */
   public static double time()
   {
-    return glfwGetTime();
+    if (Settings.getb("WindowTime"))
+    {
+      return glfwGetTime();
+    }
+    return System.currentTimeMillis();
   }
 
   /**
@@ -59,10 +68,11 @@ public class Engine
    */
   private static void initialize()
   {
+    EngineInitialization.initialize();
     Engine.window = new Window();
     Input.initialize(Engine.window);
-    EngineSettings.initialize();
     AssetManager.initialize();
+    GUI.initialize();
 
     Engine.scene_manager = new SceneManager();
 
@@ -97,17 +107,14 @@ public class Engine
     // terminate the loaded scenes' resources
     Engine.scene_manager.terminate();
 
-    // delete shaders
+    // cleanup OpenGL resources
     Shader.terminate();
-
-    // delete filters (shaders with a fancy name)
     Filter.terminate();
-
-    // delete framebuffers
     FrameBuffer.terminate();
-
-    // delete batch buffers
     DeferredMeshBatcher.terminate();
+
+    // cleanup Bullet resources
+    Assimp.terminate();
   }
 
   /**
@@ -128,24 +135,30 @@ public class Engine
     {
       double time = Engine.time();
 
-      if (time - lfps > 1000000000)
+      if (time - lfps > 1000)
       {
         Engine.FPS = fps;
-        System.out.println("FPS: " + Engine.FPS + " UPS: " + Engine.UPS + " UT " + (Engine.UT / 1000000.0));
-
-        lfps = System.nanoTime();
+        ((Label) GUI.getElement("fps-label")).text("FPS:\t" + Engine.FPS);
+        lfps = Engine.time();
         fps = 0;
       }
 
       Engine.canRender = true;
+
+      double ft = time - last;
 
       Input.reset();
       Input.update();
 
       // main action loop
       Engine.window.clear();
-      Engine.scene_manager.update(time - last);
+
+      Engine.scene_manager.integrate(ft);
+      Engine.scene_manager.update(ft);
       Engine.scene_manager.render();
+
+      GUI.render();
+
       Engine.window.update();
 
       last = time;

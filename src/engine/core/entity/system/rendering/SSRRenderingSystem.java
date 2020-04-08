@@ -30,7 +30,7 @@ public class SSRRenderingSystem extends UpdateSystem implements IRenderSystem
   @Override
   public RenderStage priority()
   {
-    return RenderStage.SCREEN_PASS;
+    return RenderStage.FORWARD_PASS;
   }
 
   @Override

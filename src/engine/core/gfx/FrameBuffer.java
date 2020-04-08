@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL44C.*;
 
 public class FrameBuffer
 {
+  private static int current = -1;
+
   private static ArrayList<FrameBuffer> buffers = new ArrayList<>();
 
   protected int id;
@@ -18,6 +20,9 @@ public class FrameBuffer
   private boolean colorBuffers = false;
   private Texture depthTexture;
 
+  /**
+   * Clears all OpenGL-Resources used by {@link FrameBuffer}s.
+   */
   public static void terminate()
   {
     int[] buffers = new int[FrameBuffer.buffers.size()];
@@ -51,11 +56,14 @@ public class FrameBuffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   }
 
-  public void bind()
+  public final void bind()
   {
-    glBindFramebuffer(GL_FRAMEBUFFER, this.id);
-    // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this.id);
-    glViewport(0, 0, this.width, this.height);
+    if (FrameBuffer.current != this.id)
+    {
+      glBindFramebuffer(GL_FRAMEBUFFER, this.id);
+      glViewport(0, 0, this.width, this.height);
+      FrameBuffer.current = this.id;
+    }
   }
 
   public void unbind()
@@ -65,6 +73,7 @@ public class FrameBuffer
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
     glViewport(0, 0, Engine.window.getWidth(), Engine.window.getHeight());
+    FrameBuffer.current = -1;
   }
 
   public void read()

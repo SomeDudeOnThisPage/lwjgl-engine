@@ -10,7 +10,7 @@ public class FlickerComponent extends ScriptComponent
   private Vector3f clq;
 
   @Override
-  public void init(Scene scene)
+  public void onComponentAttached()
   {
     this.clq = this.entity.get(PointLightSourceComponent.class).clq;
   }

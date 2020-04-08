@@ -95,15 +95,17 @@ public class Entity
    */
   public <T extends EntityComponent> Entity add(T component)
   {
+    component.entity = this;
+
     if (component.getClass().getSuperclass().equals(ScriptComponent.class))
     {
       this.scripts.put(component.getClass(), (ScriptComponent) component);
-      ((ScriptComponent) component).internal_init(this);
-      ((ScriptComponent) component).init(Engine.scene_manager.getScene());
+      component.onComponentAttached();
     }
     else
     {
       this.components.put(component.getClass(), component);
+      component.onComponentAttached();
       Engine.scene_manager.getScene().ecs().map(this);
     }
 

@@ -2,9 +2,12 @@ package engine.core.entity.system;
 
 import engine.Engine;
 import engine.core.Input;
+import engine.core.Window;
 import engine.core.entity.Entity;
 import engine.core.entity.component.*;
 import engine.core.gfx.UniformBuffer;
+import engine.core.gui.GUI;
+import engine.core.gui.Label;
 import engine.core.rendering.Renderer;
 import engine.core.rendering.RenderStage;
 import engine.core.scene.Scene;
@@ -36,18 +39,47 @@ public class CameraMovementSystem extends UpdateSystem implements IRenderSystem
 
   private boolean toggle = false;
   private boolean togglewf = false;
+  private boolean togglefs = false;
+  private boolean togglewindowed = false;
+  private boolean togglecursor = false;
 
   @Override
   public void update(Scene scene, ArrayList<Entity> entities)
   {
+    if (Input.keyDown(GLFW_KEY_F))
+    {
+      if (!togglefs)
+      {
+        Engine.window.borderless();
+        togglefs = true;
+      }
+    }
+    else
+    {
+      togglefs = false;
+    }
+
+    if (Input.keyDown(GLFW_KEY_G))
+    {
+      if (!togglewindowed)
+      {
+        togglewindowed = true;
+        Engine.window.windowed();
+      }
+    }
+    else
+    {
+      togglewindowed = false;
+    }
+
     if (Input.keyDown(GLFW_KEY_9))
     {
       if (!toggle)
       {
         Engine.FXAA = !Engine.FXAA;
-        System.out.println("fxaa " + Engine.FXAA);
         toggle = true;
       }
+      ((Label) GUI.getElement("fxaa-label")).text("FXAA:\t" + (Engine.FXAA ? "ON" : "OFF"));
     }
     else
     {
@@ -62,24 +94,49 @@ public class CameraMovementSystem extends UpdateSystem implements IRenderSystem
         System.out.println("wireframe " + Engine.WIREFRAME);
         togglewf = true;
       }
+      ((Label) GUI.getElement("mode-label")).text("FXAA:\t" + (Engine.WIREFRAME ? "WIREFRAME" : "SOLID"));
     }
     else
     {
       togglewf = false;
     }
 
-    for (Entity camera : entities)
+    if (Input.keyDown(GLFW_KEY_ESCAPE))
     {
+      if (!togglecursor)
+      {
+        Engine.window.setCursorMode(Window.CURSOR.NORMAL);
+        togglecursor = true;
+      }
+    }
+    else
+    {
+      Engine.window.setCursorMode(Window.CURSOR.DISABLED);
+      togglecursor = false;
     }
   }
 
   @Override
   public void render(Scene scene, ArrayList<Entity> entities)
   {
-    Renderer renderer = scene.getRenderer();
-
-    for (Entity camera : entities)
+    // draft for rendering shadow maps
+    // todo: some way to do cascaded shadow maps
+    // todo: some way to store shadow map textures in a bindless manner
+    for (Entity entity : entities)
     {
+      /*
+      ShadowCasterComponent source = entity.get(ShadowCasterComponent.class);
+      if (source.ALWAYS_CAST || (distance_entity_to_player < some_value && current_shadow_maps < max_shadow_maps))
+      {
+        setup_shadow_map(source);
+
+        // render scene with all objects that do not meet the renderflags
+        // (e.g. exclude rendering of a part of a mesh that contains the light source)
+        render_shadow_map(source.resolution, source.renderflags);
+
+        store_shadow_map_texture(source.index);
+      }
+       */
     }
   }
 

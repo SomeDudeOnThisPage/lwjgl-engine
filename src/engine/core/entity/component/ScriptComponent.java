@@ -5,14 +5,6 @@ import engine.core.scene.Scene;
 
 public abstract class ScriptComponent extends EntityComponent
 {
-  protected Entity entity;
-
-  public final void internal_init(Entity entity)
-  {
-    this.entity = entity;
-  }
-
-  public abstract void init(Scene scene);
   public abstract void update(Scene scene);
 
   /**

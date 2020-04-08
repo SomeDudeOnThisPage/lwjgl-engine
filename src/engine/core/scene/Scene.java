@@ -6,9 +6,9 @@ import engine.core.entity.EntityComponentSystem;
 import engine.core.entity.component.TransformComponent;
 import engine.core.entity.system.IRenderSystem;
 import engine.core.entity.system.UpdateSystem;
-import engine.core.gui.GUIRoot;
 import engine.core.rendering.Renderer;
 import engine.core.physics.PhysicsEngine;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -31,11 +31,6 @@ public abstract class Scene
    * The {@link PhysicsEngine} this scene uses. By default this will be set to use the JBullet physics engine.
    */
   private PhysicsEngine physics;
-
-  /**
-   * The {@link GUIRoot} of this {@link Scene}.
-   */
-  private GUIRoot gui;
 
   protected Entity world = new Entity("world");
 
@@ -72,11 +67,6 @@ public abstract class Scene
     return this.player;
   }
 
-  public final GUIRoot gui()
-  {
-    return this.gui;
-  }
-
   /**
    * Internally initializes the scene.
    * This should only be called by the {@link SceneManager}.
@@ -108,13 +98,16 @@ public abstract class Scene
     this.deltaTime = dt;
     if (!this.initialized) { return; }
 
+    // update ECS on the main thread
+    this.ecs.update();
+  }
+
+  public final void integrate(double dt)
+  {
     // kick off physics computations (on a separate thread)
     this.physics.update(dt);
     // wait for the physics computations to conclude before we continue with the rendering stage.
     this.physics.join();
-
-    // update ECS on the main thread
-    this.ecs.update();
   }
 
   public EntityComponentSystem ecs()
@@ -169,7 +162,7 @@ public abstract class Scene
    */
   public final void add(UpdateSystem system)
   {
-    this.ecs.addEntity(system);
+    this.ecs.addSystem(system);
   }
 
   /**

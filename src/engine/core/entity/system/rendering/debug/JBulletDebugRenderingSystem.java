@@ -25,7 +25,7 @@ public class JBulletDebugRenderingSystem extends UpdateSystem implements IRender
   private int[] modes = {
     btIDebugDraw.DebugDrawModes.DBG_NoDebug,
     btIDebugDraw.DebugDrawModes.DBG_DrawWireframe,
-    btIDebugDraw.DebugDrawModes.DBG_DrawAabb,
+    btIDebugDraw.DebugDrawModes.DBG_DrawAabb | btIDebugDraw.DebugDrawModes.DBG_DrawNormals,
     btIDebugDraw.DebugDrawModes.DBG_DrawWireframe | btIDebugDraw.DebugDrawModes.DBG_DrawAabb,
     btIDebugDraw.DebugDrawModes.DBG_DrawContactPoints | btIDebugDraw.DebugDrawModes.DBG_DrawConstraints | btIDebugDraw.DebugDrawModes.DBG_DrawConstraintLimits
   };

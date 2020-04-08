@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<elements>
+    <panel id="debug-panel" position="absolute" x="10" y="10" sx="250" sy="500">
+        <label id="debug-label-fps" position="relative" default="">
+
+        </label>
+    </panel>
+</elements>

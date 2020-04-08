@@ -11,8 +11,6 @@ public class TransformComponent extends EntityComponent
   public Vector3f euler;
   public float scale;
 
-  public Matrix4f test = new Matrix4f();
-
   private Matrix4f m_Construct;
 
   public Matrix4f construct()

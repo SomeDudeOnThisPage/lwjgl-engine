@@ -33,9 +33,11 @@ public enum RenderStage
   DEFERRED_LIGHTING_PASS,
 
   /**
-   *
+   * Any rendering operation done will be written to the pre-post-processing-buffer.
+   * Any lighting will have to be done in a forward manner.
+   * Implemented in the deferred rendering pipeline.
    */
-  SCREEN_PASS,
+  FORWARD_PASS,
 
   /**
    *

@@ -31,6 +31,14 @@ public class SceneManager
     }
   }
 
+  public synchronized void integrate(double dt)
+  {
+    if (this.active.initialized())
+    {
+      this.active.integrate(dt);
+    }
+  }
+
   public synchronized void update(double dt)
   {
     if (this.active.initialized())

@@ -1,13 +1,12 @@
 package engine;
 
-import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.CollisionConstants;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
-import com.badlogic.gdx.physics.bullet.collision.btStaticPlaneShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.*;
-import com.bulletphysics.collision.dispatch.CollisionFlags;
 import engine.core.entity.Entity;
 import engine.core.entity.component.*;
 import engine.core.entity.component.lighting.DirectionalLightSourceComponent;
@@ -16,7 +15,6 @@ import engine.core.entity.component.lighting.PointLightSourceComponent;
 import engine.core.entity.component.physics.CollisionShapeComponent;
 import engine.core.entity.system.*;
 import engine.core.entity.system.rendering.DirectionalLightingSystem;
-import engine.core.entity.system.rendering.SSRRenderingSystem;
 import engine.core.entity.system.rendering.debug.JBulletDebugRenderingSystem;
 import engine.core.entity.system.rendering.PointLightSystem;
 import engine.core.gfx.batching.AssetManager;
@@ -37,7 +35,7 @@ public class GameScene extends Scene
   {
     // add and init systems
     this.add(new CameraMovementSystem());
-    //this.add(new SkyboxSystem());
+    this.add(new SkyboxSystem());
     this.add(new PhysicsSystem());
 
     // bleep bloop there goes the performance
@@ -54,7 +52,7 @@ public class GameScene extends Scene
     this.player.add(this.player.getCamera());
 
     // add sun directional light
-    /*new Entity()
+    new Entity()
       .add(new TransformComponent(
         new Vector3f(0.0f, 1000.0f, 500.0f),
         new Quaternionf(),
@@ -62,9 +60,13 @@ public class GameScene extends Scene
       ))
       .add(new DirectionalLightSourceComponent(
         new Vector3f(-0.2f, -1.0f, -0.3f),
-        new Vector3f(0.3f, 0.3f, 0.3f),
+        new Vector3f(0.6f, 0.6f, 0.45f),
         new Vector3f(1.0f, 0.1f, 0.1f)
-      ));*/
+      ));
+
+    // add sky box
+    new Entity()
+      .add(new SkyboxComponent("blue"));
 
     //
     // Testing: Create PBRMaterialFlat test materials manually.
@@ -83,8 +85,15 @@ public class GameScene extends Scene
       0.01f, // metallic
       0.2f    // emissive
     ));
-    PBRMaterialFlat brown = (PBRMaterialFlat) AssetManager.loadMaterial("yellow", new PBRMaterialFlat(
+    PBRMaterialFlat brown = (PBRMaterialFlat) AssetManager.loadMaterial("brown", new PBRMaterialFlat(
       new Vector3f(74.0f / 255.0f, 62.0f / 255.0f, 33.0f / 255.0f),
+      0.2f,   // ao
+      0.99f,   // roughness
+      0.01f, // metallic
+      0.0f    // emissive
+    ));
+    PBRMaterialFlat grey = (PBRMaterialFlat) AssetManager.loadMaterial("grey", new PBRMaterialFlat(
+      new Vector3f(74.0f / 255.0f, 74.0f / 255.0f, 74.0f / 255.0f),
       0.2f,   // ao
       0.99f,   // roughness
       0.01f, // metallic
@@ -99,20 +108,15 @@ public class GameScene extends Scene
         1.0f
       ));
 
-    map.get(MeshComponent.class).material[0] = white;
     map.add(new CollisionShapeComponent(map, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("terrain"), true)));
     map.get(MeshComponent.class).material[0] = brown;
-
-    //new BvhTriangleMeshShape(Assimp.load_collision_mesh_tri("doom"), true);
-    //shape.setMargin(0.1f);
-    //map.add(new CollisionShapeComponent(map, 0.0f, new StaticPlaneShape(new javax.vecmath.Vector3f(0.0f, 1.0f, 0.0f), 0.0f)));
-    //map.add(new CollisionShapeComponent(map, 0.0f, new btStaticPlaneShape(new Vector3(0.0f, 1.0f, 0.0f), 0.0f)));
+    map.get(MeshComponent.class).material[1] = grey;
 
     this.player.add(new MeshComponent(AssetManager.getMesh("capsule1x2")))
       .add(new TransformComponent(
-        new Vector3f(-3.3136f, 4.2552f, -95.127f),
+        new Vector3f(-3.3136f, 10.2552f, -95.127f),
         new Quaternionf(),
-        1.0f
+        0.75f
       ))
       .add(new CharacterControllerComponent());
 
@@ -127,14 +131,13 @@ public class GameScene extends Scene
         1.0f
       )
     );
-    //lantern.add(new CollisionShapeComponent(lantern, 0.0f, new BvhTriangleMeshShape(Assimp.load_collision_mesh_tri("lantern"), true)));
-    //lantern.add(new CollisionShapeComponent(lantern, 0.0f, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("lantern"), true)));
 
     //
     // Testing: Set materials manually. Todo: Load this from files.
     //
     lantern.get(MeshComponent.class).material[0] = white;
     lantern.get(MeshComponent.class).material[1] = yellow;
+    lantern.add(new CollisionShapeComponent(lantern, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("lantern"), true)));
 
     //
     // Add light source component child entity to the lantern.
@@ -184,7 +187,7 @@ public class GameScene extends Scene
     );
 
     handheld.add(new CollisionShapeComponent(this.get("hl"), 1.0f, new btBoxShape(new Vector3(0.15f, 0.15f, 0.15f))));
-    handheld.get(CollisionShapeComponent.class).body.setCollisionFlags(CollisionFlags.NO_CONTACT_RESPONSE);
+    handheld.get(CollisionShapeComponent.class).body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
     handheld.get(CollisionShapeComponent.class).body.setAngularFactor(0.9f);
     handheld.get(CollisionShapeComponent.class).body.setDamping(0.9995f, 0.9995f);
     handheld.get(CollisionShapeComponent.class).body.setInvInertiaDiagLocal(new Vector3(0.3f, 1.0f, 0.3f));

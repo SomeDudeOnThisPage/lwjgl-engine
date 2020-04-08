@@ -3,8 +3,6 @@ package engine.util;
 import com.badlogic.gdx.physics.bullet.collision.PHY_ScalarType;
 import com.badlogic.gdx.physics.bullet.collision.btIndexedMesh;
 import com.badlogic.gdx.physics.bullet.collision.btTriangleIndexVertexArray;
-import com.bulletphysics.collision.shapes.IndexedMesh;
-import com.bulletphysics.collision.shapes.TriangleIndexVertexArray;
 import engine.core.gfx.Mesh;
 import engine.core.gfx.VertexArray;
 import org.lwjgl.BufferUtils;
@@ -18,7 +16,21 @@ import static org.lwjgl.assimp.Assimp.*;
 
 public class Assimp
 {
-  public static final int NO_FLAGS = 0x00;
+  private static ArrayList<btIndexedMesh> meshes = new ArrayList<>();
+  private static ArrayList<btTriangleIndexVertexArray> shapes = new ArrayList<>();
+
+  public static void terminate()
+  {
+    for (btIndexedMesh mesh : meshes)
+    {
+      mesh.dispose();
+    }
+
+    for (btTriangleIndexVertexArray array : shapes)
+    {
+      array.dispose();
+    }
+  }
 
   private static synchronized Mesh processMesh(AIMesh aimesh)
   {
@@ -182,9 +194,6 @@ public class Assimp
 
     return mesh;
   }
-
-  private static ArrayList<btIndexedMesh> meshes = new ArrayList<>();
-  private static ArrayList<btTriangleIndexVertexArray> shapes = new ArrayList<>();
 
   public static btTriangleIndexVertexArray load_collision_mesh_tri(String path)
   {

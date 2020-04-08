@@ -3,18 +3,14 @@ package engine.core.entity.system;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.bulletphysics.linearmath.Transform;
-import engine.Engine;
 import engine.core.entity.Entity;
 import engine.core.entity.component.EntityComponent;
 import engine.core.entity.component.TransformComponent;
 import engine.core.entity.component.physics.CollisionShapeComponent;
 import engine.core.scene.Scene;
-import engine.util.Utils;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import javax.vecmath.Quat4f;
 import java.util.ArrayList;
 
 public class PhysicsSystem extends UpdateSystem

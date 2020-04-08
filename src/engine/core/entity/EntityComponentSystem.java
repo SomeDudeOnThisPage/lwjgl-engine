@@ -185,7 +185,7 @@ public class EntityComponentSystem
    * This is a costly operation, ideally all systems should be added before any entities were initialized.
    * @param system system
    */
-  public void addEntity(UpdateSystem system)
+  public void addSystem(UpdateSystem system)
   {
     if (this.systems.containsKey(system.getClass()))
     {

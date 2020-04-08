@@ -8,6 +8,7 @@ import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
 import engine.core.gfx.VertexArray;
 import engine.core.gfx.filter.FilterBuffer;
+import engine.core.gfx.filter.ToneMapFilter;
 import engine.core.gfx.texture.Texture;
 import engine.core.scene.Scene;
 import org.lwjgl.system.NonnullDefault;
@@ -52,6 +53,12 @@ public class DeferredRenderer extends Renderer
 
   private FXAAFilter fxaa;
   private Filter fadein;
+  private Filter tonemap;
+
+  public GBuffer getGBuffer()
+  {
+    return this.gbuffer;
+  }
 
   /**
    * Performs the geometry pass.
@@ -89,7 +96,9 @@ public class DeferredRenderer extends Renderer
    */
   private void correct(Scene scene)
   {
-    this.pp.bind();
+    scene.ecs().render(RenderStage.FORWARD_PASS);
+
+    /*this.pp.bind();
     this.gbuffer.bind_pp();
     //this.gbuffer.clear();
     this.gbuffer.bind(this.pp);
@@ -101,7 +110,8 @@ public class DeferredRenderer extends Renderer
     glDrawArrays(GL_TRIANGLES, 0, 6);
     VertexArray.preRenderPass();
 
-    this.pp.unbind();
+    this.pp.unbind();*/
+    this.gbuffer.bind_pp();
   }
 
   private void filter(Scene scene)
@@ -114,6 +124,7 @@ public class DeferredRenderer extends Renderer
 
     this.fbuffer.begin(this.gbuffer.getFinalTexture());
 
+    this.fbuffer.apply(this.tonemap);
     this.fbuffer.apply(this.fxaa);
     this.fbuffer.apply(this.fadein);
 
@@ -133,17 +144,6 @@ public class DeferredRenderer extends Renderer
                       GL_COLOR_BUFFER_BIT,
                       GL_NEAREST
     );
-
-    /*glBindFramebuffer(GL_READ_FRAMEBUFFER, scene.ecs().get(SSRRenderingSystem.class).fbo.getID());
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-    glReadBuffer(GL_COLOR_ATTACHMENT10);
-
-    glBlitFramebuffer(0, 0, scene.ecs().get(SSRRenderingSystem.class).fbo.getWidth(), scene.ecs().get(SSRRenderingSystem.class).fbo.getHeight(),
-      0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
-      GL_COLOR_BUFFER_BIT,
-      GL_NEAREST
-    );*/
   }
 
   @Override
@@ -170,13 +170,15 @@ public class DeferredRenderer extends Renderer
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
+    // this.shadow(scene);
+
     this.lighting(scene);
 
     this.correct(scene);
 
     this.gbuffer.unbind();
 
-    scene.ecs().render(RenderStage.SCREEN_PASS);
+    //scene.ecs().render(RenderStage.SCREEN_PASS);
 
     this.filter(scene);
 
@@ -204,6 +206,7 @@ public class DeferredRenderer extends Renderer
 
     this.filters = new ArrayList<>();
 
+    this.tonemap = new ToneMapFilter();
     this.fxaa = new FXAAFilter();
     this.fadein = new Filter("fadein");
   }

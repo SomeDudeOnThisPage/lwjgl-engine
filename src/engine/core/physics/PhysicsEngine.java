@@ -1,25 +1,11 @@
 package engine.core.physics;
 
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.*;
-import com.badlogic.gdx.physics.bullet.linearmath.*;
-
-import com.bulletphysics.collision.broadphase.BroadphaseInterface;
-import com.bulletphysics.collision.broadphase.DbvtBroadphase;
-import com.bulletphysics.collision.dispatch.CollisionConfiguration;
-import com.bulletphysics.collision.dispatch.CollisionDispatcher;
-import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
-import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
-import com.bulletphysics.dynamics.DynamicsWorld;
-import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
-import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import engine.core.entity.Entity;
 import engine.core.entity.component.physics.CollisionShapeComponent;
 
-import javax.vecmath.Vector3f;
 import java.util.concurrent.*;
 
 public class PhysicsEngine
@@ -29,12 +15,6 @@ public class PhysicsEngine
   private ExecutorService executor;
 
   private Future barrier;
-
-  /*private DynamicsWorld world;
-  private CollisionConfiguration config;
-  private CollisionDispatcher dispatcher;
-  private BroadphaseInterface broadphase;
-  private ConstraintSolver solver;*/
 
   private btDynamicsWorld world;
   private btCollisionConfiguration config;
@@ -48,9 +28,9 @@ public class PhysicsEngine
    */
   public void update(double dt)
   {
-    this.dt = dt;
-    //this.barrier = this.executor.submit(this.thread);
-    //this.world.stepSimulation((float) dt);
+    this.dt = dt / 1000.0f;
+    //this.world.stepSimulation((float) this.dt, 5);
+    this.barrier = this.executor.submit(this.thread);
   }
 
   public btDynamicsWorld world()
@@ -80,9 +60,7 @@ public class PhysicsEngine
 
   public void join()
   {
-    this.world.stepSimulation((float) this.dt);
-
-    /*try
+    try
     {
       if (this.barrier != null && !this.barrier.isDone())
       {
@@ -92,7 +70,7 @@ public class PhysicsEngine
     catch (InterruptedException | ExecutionException e)
     {
       e.printStackTrace();
-    }*/
+    }
   }
 
   public void terminate()
@@ -117,15 +95,7 @@ public class PhysicsEngine
    */
   public PhysicsEngine()
   {
-    /*this.config = new DefaultCollisionConfiguration();
-    this.dispatcher = new CollisionDispatcher(this.config);
-    this.broadphase = new DbvtBroadphase();
-    this.solver = new SequentialImpulseConstraintSolver();
-
-    this.world = new DiscreteDynamicsWorld(this.dispatcher, this.broadphase, this.solver, this.config);
-    this.world.setGravity(new Vector3f(0.0f, -9.8f, 0.0f));
-
-    this.thread = () -> this.world.stepSimulation((float) this.dt);*/
+    this.thread = () -> this.world.stepSimulation((float) this.dt, 10);
 
     this.dt = 1;
     this.executor = Executors.newSingleThreadExecutor();
@@ -137,19 +107,5 @@ public class PhysicsEngine
 
     this.world = new btDiscreteDynamicsWorld(this.dispatcher, this.broadphase, this.solver, this.config);
     this.world.setGravity(new Vector3(0.0f, -9.8f, 0.0f));
-
-    /*btCollisionShape shape = new btBoxShape(new Vector3(1.0f, 1.0f, 1.0f));
-    btMotionState ms = new btDefaultMotionState();
-    ms.setWorldTransform(new Matrix4().setToWorld(new Vector3(0.0f, 2.0f, 5.0f), new Vector3(0.0f, 1.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f)));
-    Vector3 iner = new Vector3();
-    shape.calculateLocalInertia(1.0f, iner);
-
-    btRigidBody.btRigidBodyConstructionInfo data = new btRigidBody.btRigidBodyConstructionInfo(
-      1.0f, ms, shape, iner
-    );
-
-    w.addRigidBody(
-      new btRigidBody(data)
-    );*/
   }
 }

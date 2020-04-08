@@ -17,8 +17,8 @@ public class FilterBuffer extends FrameBuffer
 {
   private IntBuffer buffers;
 
+  private Texture t0;
   private Texture t1;
-  private Texture t2;
 
   private boolean current;
 
@@ -28,6 +28,18 @@ public class FilterBuffer extends FrameBuffer
     this.bind();
     glDrawBuffers(this.buffers);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+
+  private void t0()
+  {
+    glDrawBuffers(GL_COLOR_ATTACHMENT0);
+    glClear(GL_COLOR_BUFFER_BIT);
+  }
+
+  private void t1()
+  {
+    glDrawBuffers(GL_COLOR_ATTACHMENT1);
+    glClear(GL_COLOR_BUFFER_BIT);
   }
 
   public void begin(Texture initial)
@@ -47,13 +59,15 @@ public class FilterBuffer extends FrameBuffer
   {
     if (this.current)
     {
-      this.t2.bind(Filter.FILTER_COLOR_BUFFER_BINDING);
-      glDrawBuffers(GL_COLOR_ATTACHMENT1);
+      glDrawBuffers(GL_COLOR_ATTACHMENT0);
+      glClear(GL_COLOR_BUFFER_BIT);
+      this.t1.bind(Filter.FILTER_COLOR_BUFFER_BINDING);
     }
     else
     {
-      this.t1.bind(Filter.FILTER_COLOR_BUFFER_BINDING);
-      glDrawBuffers(GL_COLOR_ATTACHMENT0);
+      glDrawBuffers(GL_COLOR_ATTACHMENT1);
+      glClear(GL_COLOR_BUFFER_BIT);
+      this.t0.bind(Filter.FILTER_COLOR_BUFFER_BINDING);
     }
 
     this.current = !this.current;
@@ -63,11 +77,11 @@ public class FilterBuffer extends FrameBuffer
   {
     if (this.current)
     {
-      return GL_COLOR_ATTACHMENT1;
+      return GL_COLOR_ATTACHMENT0;
     }
     else
     {
-      return GL_COLOR_ATTACHMENT0;
+      return GL_COLOR_ATTACHMENT1;
     }
   }
 
@@ -82,10 +96,10 @@ public class FilterBuffer extends FrameBuffer
 
     this.bind();
 
+    this.t0 = new Texture(width, height, GL_RGB, GL_RGB, false);
     this.t1 = new Texture(width, height, GL_RGB, GL_RGB, false);
-    this.t2 = new Texture(width, height, GL_RGB, GL_RGB, false);
 
-    this.addTexture(this.t1, GL_COLOR_ATTACHMENT0);
+    this.addTexture(this.t0, GL_COLOR_ATTACHMENT0);
     this.addTexture(this.t1, GL_COLOR_ATTACHMENT1);
 
     this.current = false;

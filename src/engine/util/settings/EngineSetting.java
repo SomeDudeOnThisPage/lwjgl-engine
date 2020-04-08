@@ -3,7 +3,7 @@ package engine.util.settings;
 public class EngineSetting<T>
 {
   private T value;
-  private boolean uniform;
+  private Class<T> type;
 
   public void set(T value)
   {
@@ -12,12 +12,12 @@ public class EngineSetting<T>
 
   public T get()
   {
-    return this.value;
+    return this.type.cast(this.value);
   }
 
-  public EngineSetting(T value, boolean uniform)
+  public EngineSetting(T value, Class<T> type)
   {
     this.value = value;
-    this.uniform = uniform;
+    this.type = type;
   }
 }

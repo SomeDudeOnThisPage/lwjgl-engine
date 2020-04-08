@@ -34,7 +34,7 @@ public class SkyboxSystem extends UpdateSystem implements IRenderSystem
   @Override
   public RenderStage priority()
   {
-    return RenderStage.SCREEN_PASS;
+    return RenderStage.FORWARD_PASS;
   }
 
   @Override
@@ -46,8 +46,9 @@ public class SkyboxSystem extends UpdateSystem implements IRenderSystem
     {
       glDepthMask(false);
       glCullFace(GL_FRONT);
-      entity.get(SkyboxComponent.class).texture.bind();
-      this.shader.setUniform("u_model", new Matrix4f().scale(500.0f));
+      entity.get(SkyboxComponent.class).texture.bind(0);
+      this.shader.setUniform("u_model", new Matrix4f().scale(250.0f));
+      this.shader.setUniform("skybox", 0);
       SkyboxComponent.mesh.render();
       glCullFace(GL_BACK);
       glDepthMask(true);

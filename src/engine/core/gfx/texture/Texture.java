@@ -60,13 +60,13 @@ public class Texture
 
     Texture.stb_loader.load(path, format.components());
     glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 format.internal(),
-                 Texture.stb_loader.width(),
-                 Texture.stb_loader.height(),
-                 0, format.type(),
-                 format.data(),
-                 Texture.stb_loader.data()
+      0,
+      format.internal(),
+      Texture.stb_loader.width(),
+      Texture.stb_loader.height(),
+      0, format.type(),
+      format.data(),
+      Texture.stb_loader.data()
     );
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap.s());

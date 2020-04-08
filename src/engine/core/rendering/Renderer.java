@@ -27,7 +27,7 @@ public abstract class Renderer
       /* Matrix4f */ 16 * Float.BYTES * 2 +
       /* View Position */ 4 * Float.BYTES +
       /* Screen Size */ 4 * Float.BYTES
-      , 0);
+      , 7);
   }
 
   public final void setCamera(Camera camera)

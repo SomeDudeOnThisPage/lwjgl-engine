@@ -67,9 +67,14 @@ public class GBuffer extends FrameBuffer
     glDrawBuffers(GL_COLOR_ATTACHMENT5);
   }
 
+  public void bind_forward()
+  {
+
+  }
+
   public Texture getFinalTexture()
   {
-    return this.pp;
+    return this.lighting;
   }
 
   /**

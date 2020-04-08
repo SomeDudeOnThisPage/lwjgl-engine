@@ -1,20 +1,18 @@
 package engine.core.entity.component;
 
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.bulletphysics.linearmath.Transform;
 import engine.Engine;
 import engine.core.Input;
+import engine.core.Window;
 import engine.core.entity.component.physics.CollisionShapeComponent;
+import engine.core.scene.Player;
 import engine.core.scene.Scene;
+import engine.util.settings.EngineSetting;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
-
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Quat4f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 
@@ -26,10 +24,10 @@ public class FPCMouseOrientationComponent extends ScriptComponent
   private float pitch;
   private float yaw;
 
-  private float sensitivity = 0.5f;
+  private float sensitivity = 0.25f;
 
   @Override
-  public void init(Scene scene)
+  public void onComponentAttached()
   {
     this.pitch = 0;
     this.yaw = 0;
@@ -39,7 +37,16 @@ public class FPCMouseOrientationComponent extends ScriptComponent
   public void update(Scene scene)
   {
     // update camera orientation based on input
-    Vector2d drag = Input.getDrag();
+    Vector2d drag = new Vector2d();
+    if (Engine.window.getCursorMode() == Window.CURSOR.NORMAL)
+    {
+      drag.set(Input.getDrag());
+    }
+    else
+    {
+      drag.set(Input.getMovement());
+    }
+
     this.pitch -= (float) drag.x * sensitivity;
     this.yaw -= (float) drag.y * sensitivity;
 
@@ -47,6 +54,7 @@ public class FPCMouseOrientationComponent extends ScriptComponent
     if (Input.keyDown(GLFW_KEY_Q))
     {
       this.entity.get(TransformComponent.class).position.mul(0.0f);
+      this.entity.get(TransformComponent.class).position.y = 0.5f;
     }
 
     this.entity.get(TransformComponent.class).position.sub(new Vector3f(0.0f, 0.0f, (float) Input.getScroll().y));
@@ -65,12 +73,13 @@ public class FPCMouseOrientationComponent extends ScriptComponent
     out.getTranslation(translation);
 
     Matrix4f jomlr = new Matrix4f()
-      .rotate(p)
+      .rotate(new Quaternionf().fromAxisAngleDeg(ANGLE_UP, this.pitch))
       .setTranslation(translation.x, translation.y, translation.z);
 
     Matrix4 rout = new Matrix4()
       .set(jomlr.get(new float[16]));
 
     scene.get("player").get(CollisionShapeComponent.class).body.setWorldTransform(rout);
+    ((Player) scene.get("player")).getCamera().get(TransformComponent.class).rotation = y;
   }
 }

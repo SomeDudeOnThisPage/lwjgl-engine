@@ -1,42 +1,32 @@
 package engine.core.entity.component.physics;
 
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btStaticPlaneShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btDefaultMotionState;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
-import com.badlogic.gdx.physics.bullet.linearmath.btTransform;
-import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.collision.shapes.StaticPlaneShape;
-import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import com.bulletphysics.dynamics.constraintsolver.Point2PointConstraint;
-import com.bulletphysics.linearmath.DefaultMotionState;
-import com.bulletphysics.linearmath.MotionState;
-import com.bulletphysics.linearmath.Transform;
 import engine.Engine;
 import engine.core.entity.Entity;
 import engine.core.entity.component.EntityComponent;
 import engine.core.entity.component.TransformComponent;
-import engine.util.Utils;
-
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
 
 public class CollisionShapeComponent extends EntityComponent
 {
-  /*public RigidBody body;
-  public CollisionShape shape;
-  public MotionState state;
-  public float mass;*/
-
   public btRigidBody body;
   public btCollisionShape shape;
   public btMotionState state;
   public float mass;
+
+  @Override
+  public void onComponentRemoved()
+  {
+    this.body.dispose();
+    this.shape.dispose();
+    this.state.dispose();
+  }
 
   public CollisionShapeComponent(Entity entity, btCollisionShape shape)
   {

@@ -9,22 +9,13 @@ in VS_OUT
   mat3 tbn;
 } i;
 
-/*struct
-{
-  vec4 color;         // 16
-  float ao;           //  4
-  float roughness;    //  4
-  float metallic;     //  4
-  float emissive;     //  4
-} PBRMaterial_Flat_t; // 32 per material
-
-layout (std140, binding = 4) uniform ub_material_pbrflat
-{
-  PBRMaterial_Flat_t u_materials[1024];
-};*/
-
-// uniform int u_material;
-
+// one PBRFlat material consumes 8 uniform components, of which we have 65536 (GL_MAX_UNIFORM_BUFFER_SIZE)
+// assuming 65536 gives us backwards-compatability up to the NVidia Geforce GTX 660
+// todo: some more research, maybe this limit has to be lowered...
+// 4 + 1 + 1 + 1 + 1
+// this means we can have a total of (65536 / 8) = 8192 PBRFlat materials bound at once
+// todo: put all PBRFlat materials in one uniform buffer, and just upload one integer to index the material to the shader
+// probably put the material index in a uniform buffer aswell mapping them to the material index
 uniform struct
 {
   vec3 color;

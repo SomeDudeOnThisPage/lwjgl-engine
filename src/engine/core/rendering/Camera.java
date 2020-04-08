@@ -10,9 +10,9 @@ public final class Camera extends Entity
 {
   public void onScreenSizeChanged(int x, int y)
   {
-    //this.get(ProjectionComponent.class).projection.identity().perspective(
-    //  1.04f, (float) x / (float) y, 0.1f, 1000.0f
-    //);
+    this.get(ProjectionComponent.class).projection.identity().perspective(
+      1.04f, (float) x / (float) y, 0.1f, 1000.0f
+    );
   }
 
   public Camera()
