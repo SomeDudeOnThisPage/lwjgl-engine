@@ -3,7 +3,7 @@ package engine.core.entity.system.rendering.shadow;
 import engine.core.entity.Entity;
 import engine.core.entity.component.EntityComponent;
 import engine.core.entity.component.MeshComponent;
-import engine.core.entity.component.ShadowCasterComponent;
+import engine.core.entity.component.shadow.ShadowCasterComponent;
 import engine.core.entity.component.TransformComponent;
 import engine.core.entity.system.UpdateSystem;
 import engine.core.scene.Scene;
@@ -24,7 +24,10 @@ public class ShadowCasterCollection extends UpdateSystem
   }
 
   @Override
-  public void update(Scene scene, ArrayList<Entity> entities) {}
+  public void update(Scene scene, ArrayList<Entity> entities)
+  {
+    //System.err.println(entities.size());
+  }
 
   @Override
   public void added(Entity entity) {}

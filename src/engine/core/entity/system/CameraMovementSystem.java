@@ -27,7 +27,6 @@ public class CameraMovementSystem extends UpdateSystem implements IRenderSystem
     {
       TransformComponent.class,
       ProjectionComponent.class,
-      ControlComponent.class
     };
   }
 

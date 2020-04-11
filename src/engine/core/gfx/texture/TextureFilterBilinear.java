@@ -5,9 +5,9 @@ import static org.lwjgl.opengl.GL11C.*;
 public class TextureFilterBilinear implements ITextureFilter
 {
   @Override
-  public void apply()
+  public void apply(int target)
   {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   }
 }

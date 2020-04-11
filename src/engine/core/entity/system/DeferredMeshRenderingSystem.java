@@ -11,6 +11,8 @@ import engine.core.scene.SceneGraph;
 
 import java.util.ArrayList;
 
+import static org.lwjgl.opengl.GL43C.*;
+
 public class DeferredMeshRenderingSystem extends UpdateSystem implements IRenderSystem
 {
   @Override
@@ -38,6 +40,8 @@ public class DeferredMeshRenderingSystem extends UpdateSystem implements IRender
   @Override
   public void render(Scene scene, ArrayList<Entity> entities)
   {
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     for (Entity entity : entities)
     {
       VertexArray[] mesh = entity.get(MeshComponent.class).mesh;
@@ -59,6 +63,8 @@ public class DeferredMeshRenderingSystem extends UpdateSystem implements IRender
         mesh[i].render();
       }
     }
+
+    glDisable(GL_CULL_FACE);
   }
 
   public DeferredMeshRenderingSystem()

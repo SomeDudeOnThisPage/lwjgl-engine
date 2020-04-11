@@ -2,6 +2,7 @@ package engine.core.gfx;
 
 import engine.Engine;
 import engine.core.gfx.material.Material;
+import engine.util.settings.Settings;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -113,6 +114,11 @@ public class Shader
           output.append(Shader.include(inc));
         }
       }
+      else if (line.startsWith("#import"))
+      {
+        // todo: import static engine variable system
+        String imp = line.substring(9, line.length() - 1);
+      }
       else
       {
         if (Shader.recursion > 0 && line.contains("void main()") || line.contains("void main(void)"))
@@ -136,7 +142,8 @@ public class Shader
     if (Shader.recursion == 0)
     {
       output.append("\0");
-      output.insert(0, "#version " + Engine.GLSL_VERSION + " core\n");
+      // construct and prepend version string
+      output.insert(0, "#version " + Settings.gets("GLSLVersion") + (Settings.getb("GLSLCoreProfile") ? " core" : "") + "\n");
       Shader.included.clear();
     }
     else

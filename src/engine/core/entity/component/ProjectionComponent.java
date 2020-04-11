@@ -14,10 +14,5 @@ public class ProjectionComponent extends EntityComponent
     }
 
     this.projection = new Matrix4f()/*.ortho(-50, 50, -50, 50, 0.1f, 1000.0f);*/.perspective(fov, aspect, near, far);
-    /*this.projection.lookAt(
-      new Vector3f(1.0f, 50.0f, 0.0f),
-      new Vector3f(0.0f, 0.0f, 0.0f),
-      new Vector3f(0.0f, -1.0f, 0.0f)
-    );*/
   }
 }

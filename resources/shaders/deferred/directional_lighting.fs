@@ -1,6 +1,7 @@
 #include "shared.h"
 #include <deferred/lighting.h>
 #include <directional_light.h>
+#include <shadow.h>
 
 in VS_OUT
 {
@@ -28,13 +29,26 @@ void main()
   vec3 F0 = vec3(0.04f);
   F0 = mix(F0, albedo, metallic);
 
+  vec4 shadow_coordinate = u_lsm * vec4(position, 1.0f);
+
   vec3 dv_view = normalize(-u_view_position.xyz - position);
+  vec3 dv_light = normalize(-u_view_position.xyz - vec3(0.0f));
+
   vec3 lighting = vec3(0.0f);
 
   for (int i = 0; i < u_num_directional_lights; i++)
   {
-    lighting += lighting_directional_pbr(u_directional_lights[i], F0, position, normal, albedo, roughness, metallic, dv_view);
-    lighting += vec3(0.03) * albedo * (0.1 * ao);
+    vec3 a = lighting_directional_pbr(u_directional_lights[i], F0, position, normal, albedo, roughness, metallic, dv_view);
+
+    if (i == 0 && u_directional_lights[i].shadow != -1)
+    {
+      float shadow = shd_shadow(shadow_coordinate, dot(normal, dv_light), 0);
+      a *= (1.0f - shadow);
+      //a *= shd_shadow(u_directional_lights[i].pos, 0/*u_directional_lights[i].shadow*/);
+    }
+
+    a += vec3(0.03) * albedo * (0.1 * ao);
+    lighting += a;
   }
 
   gl_FragColor = vec4(lighting, 1.0f);

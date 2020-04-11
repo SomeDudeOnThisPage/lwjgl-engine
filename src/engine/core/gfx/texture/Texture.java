@@ -15,7 +15,7 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture
 {
-  private static final Resource.STBILoader stb_loader = new Resource.STBILoader();
+  protected static final Resource.STBILoader stb_loader = new Resource.STBILoader();
 
   protected int id;
   protected int width;
@@ -72,7 +72,7 @@ public class Texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap.s());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap.t());
 
-    this.filter.apply();
+    this.filter.apply(GL_TEXTURE_2D);
     this.unbind();
   }
 

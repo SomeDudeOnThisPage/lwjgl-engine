@@ -47,9 +47,7 @@ vec3 lighting_directional_pbr(DirectionalLight_t light, vec3 F0, vec3 f_position
   vec3 dv_light = normalize(-light.dir.xyz);
   vec3 dv_half = normalize(dv_view + dv_light);
 
-  //float distance = length(light.pos.xyz - f_position);
-  //float attenuation = 1.0 / (light.clq.x + light.clq.y * (distance) + light.clq.z * (distance * distance));
-  vec3 radiance = light.col.xyz;// * attenuation;
+  vec3 radiance = light.col.xyz;
 
   float ndf = DistributionGGX(f_normal, dv_half, f_roughness);
   float g = GeometrySmith(f_normal, dv_view, dv_light, f_roughness);

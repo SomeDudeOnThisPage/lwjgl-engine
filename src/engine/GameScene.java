@@ -2,7 +2,6 @@ package engine;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.CollisionConstants;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -13,10 +12,14 @@ import engine.core.entity.component.lighting.DirectionalLightSourceComponent;
 import engine.core.entity.component.lighting.FlickerComponent;
 import engine.core.entity.component.lighting.PointLightSourceComponent;
 import engine.core.entity.component.physics.CollisionShapeComponent;
+import engine.core.entity.component.shadow.ShadowCasterComponent;
+import engine.core.entity.component.shadow.ShadowSourceComponent;
 import engine.core.entity.system.*;
 import engine.core.entity.system.rendering.DirectionalLightingSystem;
 import engine.core.entity.system.rendering.debug.JBulletDebugRenderingSystem;
 import engine.core.entity.system.rendering.PointLightSystem;
+import engine.core.entity.system.rendering.shadow.ShadowCasterCollection;
+import engine.core.entity.system.rendering.shadow.ShadowMapSystem;
 import engine.core.gfx.batching.AssetManager;
 import engine.core.gfx.material.PBRMaterialFlat;
 import engine.core.rendering.DeferredRenderer;
@@ -27,6 +30,8 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.lang.System;
+
+import static org.lwjgl.opengl.GL11C.GL_FRONT;
 
 public class GameScene extends Scene
 {
@@ -45,6 +50,8 @@ public class GameScene extends Scene
     this.add(new DeferredMeshRenderingSystem());
     this.add(new DirectionalLightingSystem());
     this.add(new PointLightSystem());
+    this.add(new ShadowMapSystem());
+    this.add(new ShadowCasterCollection());
 
     // todo: make renderer setup n i c e r
     this.renderer = new DeferredRenderer();
@@ -54,15 +61,16 @@ public class GameScene extends Scene
     // add sun directional light
     new Entity()
       .add(new TransformComponent(
-        new Vector3f(0.0f, 1000.0f, 500.0f),
+        new Vector3f(0.0f, 200.0f, 200.0f),
         new Quaternionf(),
         1.0f
       ))
       .add(new DirectionalLightSourceComponent(
-        new Vector3f(-0.2f, -1.0f, -0.3f),
+        new Vector3f(-0.2f, -0.5f, -0.3f),
         new Vector3f(0.6f, 0.6f, 0.45f),
-        new Vector3f(1.0f, 0.1f, 0.1f)
-      ));
+        new Vector3f(1.0f, 0.1f, 0.1f)      // todo: remove clq attenuation from directional light sources
+      ))
+      .add(new ShadowSourceComponent(1000000.0f));
 
     // add sky box
     new Entity()
@@ -106,19 +114,22 @@ public class GameScene extends Scene
         new Vector3f(0.0f, 0.0f, 0.0f),
         new Quaternionf(),
         1.0f
-      ));
+      ))
+      .add(new ShadowCasterComponent());
 
     map.add(new CollisionShapeComponent(map, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("terrain"), true)));
     map.get(MeshComponent.class).material[0] = brown;
-    map.get(MeshComponent.class).material[1] = grey;
+    //map.get(MeshComponent.class).material[1] = grey;
+    map.get(MeshComponent.class).culling = GL_FRONT;
 
     this.player.add(new MeshComponent(AssetManager.getMesh("capsule1x2")))
       .add(new TransformComponent(
-        new Vector3f(-3.3136f, 10.2552f, -95.127f),
+        new Vector3f(24.316f, 2.5685f, -10.485f),
         new Quaternionf(),
         0.75f
       ))
-      .add(new CharacterControllerComponent());
+      .add(new CharacterControllerComponent())
+      .add(new ShadowCasterComponent());
 
     //
     // Create lantern entity.
@@ -126,11 +137,11 @@ public class GameScene extends Scene
     Entity lantern = new Entity()
       .add(new MeshComponent(AssetManager.getMesh("lantern")))
       .add(new TransformComponent(
-        new Vector3f(24.316f, 1.5685f, -10.485f),
+        new Vector3f(24.316f, 1.8685f, -10.485f),
         new Quaternionf(),
         1.0f
-      )
-    );
+      ))
+      .add(new ShadowCasterComponent());
 
     //
     // Testing: Set materials manually. Todo: Load this from files.
@@ -138,6 +149,7 @@ public class GameScene extends Scene
     lantern.get(MeshComponent.class).material[0] = white;
     lantern.get(MeshComponent.class).material[1] = yellow;
     lantern.add(new CollisionShapeComponent(lantern, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("lantern"), true)));
+    lantern.add(new ShadowCasterComponent());
 
     //
     // Add light source component child entity to the lantern.
@@ -161,9 +173,8 @@ public class GameScene extends Scene
       .add(new TransformComponent(
         new Vector3f(-4.5758f, 2.0781f, -101.04f),
         new Quaternionf().rotationY(15.0f),
-        1.0f
-      )
-    );
+        1.0f))
+      .add(new ShadowCasterComponent());
 
     cabin.add(new CollisionShapeComponent(cabin, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("cabin"), true)));
 

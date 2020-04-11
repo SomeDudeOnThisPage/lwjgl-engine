@@ -54,7 +54,7 @@ public class UniformBuffer
       System.exit(1);
     }
 
-    glBufferSubData(GL_UNIFORM_BUFFER, position, new int[] {uniform});
+    glBufferSubData(GL_UNIFORM_BUFFER, position, new int[] { uniform });
   }
 
   public void setUniform(Matrix4f uniform, int position)

@@ -2,13 +2,11 @@ package engine.core.rendering;
 
 import engine.Engine;
 import engine.core.entity.system.rendering.SSRRenderingSystem;
-import engine.core.gfx.filter.FXAAFilter;
-import engine.core.gfx.filter.Filter;
+import engine.core.gfx.filter.*;
 import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
 import engine.core.gfx.VertexArray;
-import engine.core.gfx.filter.FilterBuffer;
-import engine.core.gfx.filter.ToneMapFilter;
+import engine.core.gfx.shadow.ShadowMapBuffer;
 import engine.core.gfx.texture.Texture;
 import engine.core.scene.Scene;
 import org.lwjgl.system.NonnullDefault;
@@ -47,6 +45,12 @@ public class DeferredRenderer extends Renderer
    */
   private GBuffer gbuffer;
 
+  /**
+   * Shadow-Map-Buffer.
+   * This buffer is used to store 2D Shadow-Maps for directional & spotlights, and 3D Shadow-Maps for point lights.
+   */
+  private ShadowMapBuffer sbuffer;
+
   private FilterBuffer fbuffer;
 
   private Shader pp;
@@ -54,10 +58,15 @@ public class DeferredRenderer extends Renderer
   private FXAAFilter fxaa;
   private Filter fadein;
   private Filter tonemap;
+  private ShadowBlitFilter blitter;
 
   public GBuffer getGBuffer()
   {
     return this.gbuffer;
+  }
+  public ShadowMapBuffer getSBuffer()
+  {
+    return this.sbuffer;
   }
 
   /**
@@ -71,6 +80,22 @@ public class DeferredRenderer extends Renderer
     this.gbuffer.clear();
     this.gbuffer.bind_geometry();
     scene.ecs().render(RenderStage.DEFERRED_GEOMETRY_PASS);
+  }
+
+  private void shadow(Scene scene)
+  {
+    // bind shadow buffer for directional lights
+    this.sbuffer.clear();
+    this.sbuffer.bind_directional();
+
+    // render directional light shadows
+    scene.ecs().render(RenderStage.DEFERRED_SHADOW_PASS);
+
+    // bind shadow buffer for point lights
+    // render point light shadows
+
+    // rebind gbuffer!
+    this.gbuffer.bind();
   }
 
   /**
@@ -93,6 +118,7 @@ public class DeferredRenderer extends Renderer
 
   /**
    * Applies exposure, tonemapping and color correction to a texture bound at uniform location 'color' in the deferred.post_processing shader.
+   * @deprecated This functionality has been moved to the filter stage performed in {@link DeferredRenderer#filter(Scene)}.
    */
   private void correct(Scene scene)
   {
@@ -123,16 +149,27 @@ public class DeferredRenderer extends Renderer
     this.fbuffer.bind();
 
     this.fbuffer.begin(this.gbuffer.getFinalTexture());
-
     this.fbuffer.apply(this.tonemap);
     this.fbuffer.apply(this.fxaa);
     this.fbuffer.apply(this.fadein);
+    //this.fbuffer.apply(this.blitter);
 
     scene.ecs().render(RenderStage.FILTER_PASS);
 
     glEnable(GL_DEPTH_TEST);
 
     // todo: make this nicer, ideally without blitting
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, this.sbuffer.getID());
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+    glBlitFramebuffer(0, 0, this.sbuffer.getWidth(), this.sbuffer.getHeight(),
+      0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
+      GL_COLOR_BUFFER_BIT,
+      GL_NEAREST
+    );
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, this.fbuffer.getID());
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -170,7 +207,7 @@ public class DeferredRenderer extends Renderer
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    // this.shadow(scene);
+    this.shadow(scene);
 
     this.lighting(scene);
 
@@ -203,11 +240,13 @@ public class DeferredRenderer extends Renderer
 
     this.gbuffer = new GBuffer(Engine.window.getWidth(), Engine.window.getHeight());
     this.fbuffer = new FilterBuffer(Engine.window.getWidth(), Engine.window.getHeight());
+    this.sbuffer = new ShadowMapBuffer();
 
     this.filters = new ArrayList<>();
 
     this.tonemap = new ToneMapFilter();
     this.fxaa = new FXAAFilter();
     this.fadein = new Filter("fadein");
+    this.blitter = new ShadowBlitFilter();
   }
 }

@@ -244,6 +244,8 @@ public class Window
     System.out.println("max. vertex uniform components: " + glGetInteger(GL_MAX_VERTEX_UNIFORM_COMPONENTS));
     System.out.println("max. fragment uniform components: " + glGetInteger(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS));
 
+    System.out.println("max. array texture layers: " + glGetInteger(GL_MAX_ARRAY_TEXTURE_LAYERS));
+
     if (Settings.getb("Multisample"))
     {
       glEnable(GL_MULTISAMPLE);

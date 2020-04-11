@@ -2,10 +2,12 @@ struct DirectionalLight_t
 {
   vec4 pos;
   vec4 dir;
-  // vec4 amb;
   vec4 col;
-  vec4 clq;
+  int shadow;
 };
+
+uniform sampler2DArray u_directional_shadows;
+uniform mat4 u_lsm;
 
 layout (std140, binding = 2) uniform ub_directional_lights
 {

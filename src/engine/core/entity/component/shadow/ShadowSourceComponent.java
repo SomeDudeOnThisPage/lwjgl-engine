@@ -7,12 +7,20 @@ import engine.core.entity.component.EntityComponent;
  */
 public class ShadowSourceComponent extends EntityComponent
 {
+  public enum Type
+  {
+    TYPE_2D,
+    TYPE_3D
+  }
+
   /**
    * Disable deactivation depending on distance.
    * Note that a shadow-map will then ALWAYS be rendered, potentially decreasing performance.
    * Recommended to only set true for directional light sources with infinite range.
    */
   public boolean ALWAYS_ACTIVE;
+
+
 
   /**
    * Value used in distance-calculation of the {@link engine.core.entity.system.rendering.shadow.ShadowMapSystem}

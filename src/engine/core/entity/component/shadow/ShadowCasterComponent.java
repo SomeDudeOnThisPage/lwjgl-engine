@@ -24,6 +24,5 @@ public class ShadowCasterComponent extends EntityComponent
   public ShadowCasterComponent()
   {
     this.disabled = new ArrayList<>();
-    this.disabled.add(3, true);
   }
 }

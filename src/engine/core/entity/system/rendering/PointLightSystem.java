@@ -66,6 +66,8 @@ public class PointLightSystem extends UpdateSystem implements IRenderSystem
       this.lights.setUniform(data.color,      i * POINT_LIGHT_BYTES +     UniformBuffer.OFFSET_VEC4F);
       this.lights.setUniform(data.clq,        i * POINT_LIGHT_BYTES + 2 * UniformBuffer.OFFSET_VEC4F);
 
+      // todo: shadow map indices
+
       i++;
     }
 

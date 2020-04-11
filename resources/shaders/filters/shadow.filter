@@ -1,0 +1,19 @@
+#include "filters/filter.h"
+#include "shared.h"
+
+in VS_OUT
+{
+  vec2 uv;
+} i;
+
+uniform sampler2DArray u_directional_shadows;
+
+float layer2coord(uint capacity, uint layer)
+{
+  return max(0, min(float(capacity - 1), floor(float(layer) + 0.5)));
+}
+
+void main()
+{
+  gl_FragColor = texture(u_directional_shadows, vec3(i.uv, /*layer2coord(1, 0)*/ 0));
+}

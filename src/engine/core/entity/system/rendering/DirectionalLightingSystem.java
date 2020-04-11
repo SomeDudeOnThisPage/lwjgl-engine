@@ -6,9 +6,12 @@ import engine.core.entity.component.TransformComponent;
 import engine.core.entity.component.lighting.DirectionalLightSourceComponent;
 import engine.core.entity.system.IRenderSystem;
 import engine.core.entity.system.UpdateSystem;
+import engine.core.entity.system.rendering.shadow.ShadowMapSystem;
 import engine.core.gfx.Shader;
 import engine.core.gfx.UniformBuffer;
 import engine.core.gfx.VertexArray;
+import engine.core.gfx.shadow.ShadowMapBuffer;
+import engine.core.rendering.DeferredRenderer;
 import engine.core.rendering.GBuffer;
 import engine.core.rendering.RenderStage;
 import engine.core.scene.Scene;
@@ -21,7 +24,7 @@ import static org.lwjgl.opengl.GL42C.*;
 public class DirectionalLightingSystem extends UpdateSystem implements IRenderSystem
 {
   private static final int MAX_DIRECTIONAL_LIGHTS = 256;
-  private static final int DIRECTIONAL_LIGHT_BYTES = 4 * UniformBuffer.OFFSET_VEC4F;
+  private static final int DIRECTIONAL_LIGHT_BYTES = 4 * UniformBuffer.OFFSET_VEC4F;// + UniformBuffer.N_BYTES;
 
   private Shader quad;
   private UniformBuffer lights;
@@ -49,6 +52,10 @@ public class DirectionalLightingSystem extends UpdateSystem implements IRenderSy
     this.quad.setUniform("u_gbuffer.normal", GBuffer.UNIFORM_NORMAL_TEXTURE_BUFFER_POSITION);
     this.quad.setUniform("u_gbuffer.albedo", GBuffer.UNIFORM_ALBEDO_TEXTURE_BUFFER_POSITION);
     this.quad.setUniform("u_gbuffer.roughness_metallic_ao", GBuffer.UNIFORM_RGH_MTL_AO_TEXTURE_BUFFER_POSITION);
+    this.quad.setUniform("u_lsm", ShadowMapSystem.lsm());
+
+    ((DeferredRenderer) scene.getRenderer()).getSBuffer().bind(this.quad);
+
     this.quad.bind();
 
     // A directional light is represented as a fullscreen quad being drawn. This quad is constant.
@@ -64,7 +71,8 @@ public class DirectionalLightingSystem extends UpdateSystem implements IRenderSy
       this.lights.setUniform(position,        i * DIRECTIONAL_LIGHT_BYTES                                 );
       this.lights.setUniform(data.direction,  i * DIRECTIONAL_LIGHT_BYTES +     UniformBuffer.OFFSET_VEC4F);
       this.lights.setUniform(data.color,      i * DIRECTIONAL_LIGHT_BYTES + 2 * UniformBuffer.OFFSET_VEC4F);
-      this.lights.setUniform(data.clq,        i * DIRECTIONAL_LIGHT_BYTES + 3 * UniformBuffer.OFFSET_VEC4F);
+      this.lights.setUniform(data.shadowIndex,i * DIRECTIONAL_LIGHT_BYTES + 3 * UniformBuffer.OFFSET_VEC4F);
+      //this.lights.setUniform(data.clq,        i * DIRECTIONAL_LIGHT_BYTES + 3 * UniformBuffer.OFFSET_VEC4F);
 
       i++;
     }
