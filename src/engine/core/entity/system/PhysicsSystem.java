@@ -3,21 +3,34 @@ package engine.core.entity.system;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import engine.Engine;
 import engine.core.entity.Entity;
 import engine.core.entity.component.EntityComponent;
 import engine.core.entity.component.TransformComponent;
 import engine.core.entity.component.physics.CollisionShapeComponent;
 import engine.core.scene.Scene;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
+/**
+ * This system synchronizes the internal transforms of the {@link engine.core.physics.PhysicsEngine} and the internal
+ * {@link Engine}s' {@link Entity} instance transforms, stored in their respective {@link TransformComponent}s.
+ */
 public class PhysicsSystem extends UpdateSystem
 {
+  /** Used to reduce memory allocation per frame. */
+  private Matrix4 transform;
+
+  /** Used to reduce memory allocation per frame. */
+  private Vector3 position;
+
+  /** Used to reduce memory allocation per frame. */
+  private Quaternion rotation;
+
   @Override
   public <T extends EntityComponent> Class<T>[] components()
   {
+    // all game objects that contain their own transform, and are participating in the physics world
     return new Class[]
     {
       CollisionShapeComponent.class,
@@ -30,33 +43,34 @@ public class PhysicsSystem extends UpdateSystem
   {
     for (Entity entity : entities)
     {
-      /*Transform transform = entity.get(CollisionShapeComponent.class).body.getMotionState().getWorldTransform(new Transform());
+      entity.get(CollisionShapeComponent.class).body.getMotionState().getWorldTransform(this.transform);
 
-      entity.get(TransformComponent.class).position = Utils.convert(transform.origin);
-      entity.get(TransformComponent.class).rotation = Utils.convert(transform.getRotation(new Quat4f()));*/
+      this.transform.getTranslation(this.position);
 
-      Matrix4 transform = new Matrix4();
-      entity.get(CollisionShapeComponent.class).body.getMotionState().getWorldTransform(transform);
-      Vector3 position = new Vector3();
-      transform.getTranslation(position);
-      Quaternion rotation = new Quaternion();
-      transform.getRotation(rotation);
+      this.rotation = new Quaternion();
+      this.transform.getRotation(this.rotation);
 
-      entity.get(TransformComponent.class).position = new Vector3f(
-        position.x,
-        position.y,
-        position.z
-      );
-
-      entity.get(TransformComponent.class).rotation = new Quaternionf(
-        rotation.x,
-        rotation.y,
-        rotation.z,
-        rotation.w
+      // synchronize internal bullet transform and our internal engine transform
+      entity.get(TransformComponent.class).position.set(
+        this.position.x,
+        this.position.y,
+        this.position.z);
+      entity.get(TransformComponent.class).rotation.set(
+        this.rotation.x,
+        this.rotation.y,
+        this.rotation.z,
+        this.rotation.w
       );
     }
   }
 
   @Override
   public void added(Entity entity) {}
+
+  public PhysicsSystem()
+  {
+    this.transform = new Matrix4();
+    this.position = new Vector3();
+    this.rotation = new Quaternion();
+  }
 }

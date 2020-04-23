@@ -1,6 +1,6 @@
 package engine.core.gfx.batching;
 
-import engine.core.gfx.material.Material;
+import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.VertexArray;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class MaterialIndex
 {
-  private HashMap<Material, ArrayList<VertexArray>> index;
+  private HashMap<MaterialArchetype, ArrayList<VertexArray>> index;
 
   public void map(RenderableMesh mesh)
   {

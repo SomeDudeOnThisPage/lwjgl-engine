@@ -1,14 +1,7 @@
 package engine.core.gfx.batching;
 
-import engine.core.gfx.material.Material;
-import engine.core.gfx.Mesh;
-import org.joml.Matrix4f;
-
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import static org.lwjgl.opengl.GL44C.*;
 
 public class DeferredMeshBatcher
 {
@@ -252,7 +245,7 @@ public class DeferredMeshBatcher
     return DeferredMeshBatcher.instance;
   }
 
-  public static void batch(Mesh mesh, Matrix4f model, Material material, int instances)
+  public static void batch(Mesh mesh, Matrix4f model, MaterialArchetype material, int instances)
   {
     // sanity checks
     if (vertices.position() + mesh.vertices().length > SIZE / 4) { return; }

@@ -41,6 +41,11 @@ public class VertexArray
   protected boolean[] attributes;
 
   /**
+   * Default-Material definition for this mesh by string name identifier.
+   */
+  protected String material;
+
+  /**
    * Stores the indices of the loaded VertexBufferObjects used by this VertexArray
    */
   private ArrayList<Integer> vbo_loaded = new ArrayList<>();
@@ -64,6 +69,16 @@ public class VertexArray
     {
       glDisableVertexAttribArray(i);
     }
+  }
+
+  public void setInitialMaterial(String material)
+  {
+    this.material = material;
+  }
+
+  public String getInitialMaterial()
+  {
+    return this.material;
   }
 
   /**

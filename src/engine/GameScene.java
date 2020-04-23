@@ -66,7 +66,7 @@ public class GameScene extends Scene
       ))
       .add(new DirectionalLightSourceComponent(
         new Vector3f(-0.2f, -0.5f, -0.3f),
-        new Vector3f(0.6f, 0.6f, 0.45f),
+        new Vector3f(0.95f, 0.95f, 0.90f),
         new Vector3f(1.0f, 0.1f, 0.1f)      // todo: remove clq attenuation from directional light sources
       ))
       .add(new ShadowSourceComponent(1000000.0f));
@@ -75,37 +75,18 @@ public class GameScene extends Scene
     new Entity()
       .add(new SkyboxComponent("blue"));
 
+    AssetManager.loadMaterial("pbrflat_white");
+    AssetManager.loadMaterial("pbrflat_grey");
+    AssetManager.loadMaterial("pbrflat_missing");
+    AssetManager.loadMaterial("pbrflat_emissive_yellow");
+
     //
     // Testing: Create PBRMaterialFlat test materials manually.
     //
-    PBRMaterialFlat white = (PBRMaterialFlat) AssetManager.loadMaterial("white", new PBRMaterialFlat(
-      new Vector3f(1.0f, 1.0f, 1.0f),
-      0.2f,   // ao
-      0.99f,   // roughness
-      0.01f, // metallic
-      0.0f    // emissive
-    ));
-    PBRMaterialFlat yellow = (PBRMaterialFlat) AssetManager.loadMaterial("yellow", new PBRMaterialFlat(
-      new Vector3f(0.5f, 0.5f, 0.245f),
-      0.2f,   // ao
-      0.99f,   // roughness
-      0.01f, // metallic
-      0.2f    // emissive
-    ));
-    PBRMaterialFlat brown = (PBRMaterialFlat) AssetManager.loadMaterial("brown", new PBRMaterialFlat(
-      new Vector3f(74.0f / 255.0f, 62.0f / 255.0f, 33.0f / 255.0f),
-      0.2f,   // ao
-      0.99f,   // roughness
-      0.01f, // metallic
-      0.0f    // emissive
-    ));
-    PBRMaterialFlat grey = (PBRMaterialFlat) AssetManager.loadMaterial("grey", new PBRMaterialFlat(
-      new Vector3f(74.0f / 255.0f, 74.0f / 255.0f, 74.0f / 255.0f),
-      0.2f,   // ao
-      0.99f,   // roughness
-      0.01f, // metallic
-      0.0f    // emissive
-    ));
+    PBRMaterialFlat white = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-white");
+    PBRMaterialFlat yellow = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-emissive-yellow");
+    PBRMaterialFlat brown = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-brown");
+    PBRMaterialFlat grey = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-grey");
 
     Entity map = new Entity()
       .add(new MeshComponent(AssetManager.getMesh("terrain")))

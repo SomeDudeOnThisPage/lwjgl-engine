@@ -1,14 +1,14 @@
 package engine.core.gfx.batching;
 
-import engine.core.gfx.material.Material;
+import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.VertexArray;
 
 /**
- * This object links static mesh prefabs ({@link VertexArray}s) to {@link Material}s.
+ * This object links static mesh prefabs ({@link VertexArray}s) to {@link MaterialArchetype}s.
  */
 public class RenderableMesh
 {
-  private Material material;
+  private MaterialArchetype material;
   private VertexArray mesh;
 
   public VertexArray getMesh()
@@ -16,12 +16,12 @@ public class RenderableMesh
     return this.mesh;
   }
 
-  public void setMaterial(Material material)
+  public void setMaterial(MaterialArchetype material)
   {
     this.material = material;
   }
 
-  public RenderableMesh(VertexArray mesh, Material material)
+  public RenderableMesh(VertexArray mesh, MaterialArchetype material)
   {
     this.mesh = mesh;
     this.material = material;

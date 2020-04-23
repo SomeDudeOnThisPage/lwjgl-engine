@@ -2,11 +2,13 @@ package engine.core.gfx.material;
 
 import engine.core.gfx.Shader;
 import engine.core.gfx.texture.Texture;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.w3c.dom.Element;
 
 import static org.lwjgl.opengl.GL33C.*;
 
-public class Material
+public abstract class MaterialArchetype
 {
   private static final int MAX_TEXTURES = glGetInteger(GL_MAX_TEXTURE_IMAGE_UNITS);
 
@@ -21,6 +23,15 @@ public class Material
 
   protected Shader shader;
 
+  /**
+   * This method should set the values of {@code this} to the values defined in the {@code <archetype>}-tag in a
+   * {@code .mat} file. The method should return {@code this}.
+   * <p>See {@link PBRMaterialFlat#load(Element)} for reference.</p>
+   * @param xml The XML-{@code <archetype>} element.
+   * @return {@code this}.
+   */
+  public abstract MaterialArchetype load(@NotNull Element xml);
+
   public boolean transparent()
   {
     return this.transparent;
@@ -31,7 +42,7 @@ public class Material
    */
   public void addMap(int index, Texture texture)
   {
-    if (index >= Material.MAX_TEXTURES)
+    if (index >= MaterialArchetype.MAX_TEXTURES)
     {
       System.err.println("cannot bind texture to index " + index + " - no more than " + MAX_TEXTURES + " texture samplers allowed");
     }
@@ -91,9 +102,9 @@ public class Material
     }
   }
 
-  public Material() {}
+  public MaterialArchetype() {}
 
-  public Material(Vector3f ambient, Vector3f diffuse, Vector3f specular, float shininess)
+  public MaterialArchetype(Vector3f ambient, Vector3f diffuse, Vector3f specular, float shininess)
   {
     this.ambient = ambient;
     this.diffuse = diffuse;

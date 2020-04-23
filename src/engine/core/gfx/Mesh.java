@@ -1,6 +1,6 @@
 package engine.core.gfx;
 
-import engine.core.gfx.material.Material;
+import engine.core.gfx.material.MaterialArchetype;
 
 public class Mesh
 {
@@ -12,7 +12,7 @@ public class Mesh
 
   private int[] indices;
 
-  private Material material;
+  private MaterialArchetype material;
 
   public float[] vertices()
   {

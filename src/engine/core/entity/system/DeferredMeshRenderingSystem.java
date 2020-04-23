@@ -3,7 +3,7 @@ package engine.core.entity.system;
 import engine.core.entity.Entity;
 import engine.core.entity.component.*;
 import engine.core.gfx.batching.AssetManager;
-import engine.core.gfx.material.Material;
+import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.VertexArray;
 import engine.core.rendering.RenderStage;
 import engine.core.scene.Scene;
@@ -45,14 +45,14 @@ public class DeferredMeshRenderingSystem extends UpdateSystem implements IRender
     for (Entity entity : entities)
     {
       VertexArray[] mesh = entity.get(MeshComponent.class).mesh;
-      Material[] material = entity.get(MeshComponent.class).material;
+      MaterialArchetype[] material = entity.get(MeshComponent.class).material;
 
       for (int i = 0; i < mesh.length; i++)
       {
         if (material[i] == null)
         {
-          AssetManager.getMaterial("white").bind();
-          AssetManager.getMaterial("white").shader().setUniform("u_model", SceneGraph.constructTransform(entity));
+          AssetManager.getMissingMaterial().bind();
+          AssetManager.getMissingMaterial().shader().setUniform("u_model", SceneGraph.constructTransform(entity));
         }
         else
         {

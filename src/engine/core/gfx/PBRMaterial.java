@@ -1,12 +1,12 @@
 package engine.core.gfx;
 
 import engine.core.gfx.batching.AssetManager;
-import engine.core.gfx.material.Material;
+import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.texture.*;
 
 import static org.lwjgl.opengl.GL33C.*;
 
-public class PBRMaterial extends Material
+public abstract class PBRMaterial extends MaterialArchetype
 {
   private static final int ALBEDO_MAP_SLOT = 0;
   private static final int NORMAL_MAP_SLOT = 1;

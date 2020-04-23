@@ -1,7 +1,7 @@
 package engine.core.gfx;
 
 import engine.Engine;
-import engine.core.gfx.material.Material;
+import engine.core.gfx.material.MaterialArchetype;
 import engine.util.settings.Settings;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -40,7 +40,7 @@ public class Shader
    */
   protected int program;
 
-  private Material material;
+  private MaterialArchetype material;
 
   /**
    * 16-Slot {@link FloatBuffer} used for setting 4x4 {@link Matrix4f} uniforms and any other float uniforms with
@@ -184,12 +184,12 @@ public class Shader
     }
   }
 
-  public Material getCurrentMaterial()
+  public MaterialArchetype getCurrentMaterial()
   {
     return this.material;
   }
 
-  public void setCurrentMaterial(Material material)
+  public void setCurrentMaterial(MaterialArchetype material)
   {
     this.material = material;
   }

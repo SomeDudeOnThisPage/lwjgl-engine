@@ -1,7 +1,6 @@
 package engine.core.entity.component.debug;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import engine.core.Input;
 import engine.core.entity.Entity;
@@ -47,14 +46,16 @@ public class LightShooterComponent extends Behaviour
         .add(new MeshComponent(AssetManager.getMesh("sphere")))
         .add(new PointLightSourceComponent(
           new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random()),
-          new Vector3f(8f, 0.07f, 0.01f)
+          new Vector3f(25f, 0.07f, 0.01f)
         ))
         .add(new ShadowCasterComponent());
+
+      light.get(MeshComponent.class).material[0] = AssetManager.getMaterial("pbr-flat-white");
 
       light.add(new CollisionShapeComponent(light, 1.0f, new btSphereShape(size)));
       light.get(CollisionShapeComponent.class).body.setInvInertiaDiagLocal(new Vector3(0.8f, 0.8f, 0.8f));
       light.get(CollisionShapeComponent.class).body.updateInertiaTensor();
-      light.get(CollisionShapeComponent.class).body.applyCentralForce(Utils.convert(direction.normalize().mul(250.0f)));
+      light.get(CollisionShapeComponent.class).body.applyCentralImpulse(Utils.convert(direction.normalize().mul(10.0f)));
     }
   }
 }

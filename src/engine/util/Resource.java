@@ -1,8 +1,13 @@
 package engine.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -63,6 +68,23 @@ public class Resource
       this.height = BufferUtils.createIntBuffer(1);
       this.components = BufferUtils.createIntBuffer(1);
     }
+  }
+
+  private static final DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
+
+  public static Document loadXML(@NotNull String resource)
+  {
+    try
+    {
+      DocumentBuilder builder = Resource.factory.newDocumentBuilder();
+      return builder.parse(resource);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 
   public static ByteBuffer load(String resource) throws IOException

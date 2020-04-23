@@ -1,0 +1,29 @@
+<matfile>
+    <matdef id="pbr-flat-grey" archetype="pbr-flat-color">
+        <properties>
+            <transparency value="false"/>
+        </properties>
+
+        <archetype>
+            <color>     0.30 0.30 0.30 </color>
+            <metallic>  0.01           </metallic>
+            <roughness> 0.95           </roughness>
+            <ao>        0.02           </ao>
+            <emissive>  0.00           </emissive>
+        </archetype>
+    </matdef>
+
+    <matdef id="pbr-flat-brown" archetype="pbr-flat-color">
+        <properties>
+            <transparency value="false"/>
+        </properties>
+
+        <archetype>
+            <color>     0.30 0.25 0.12 </color>
+            <metallic>  0.01           </metallic>
+            <roughness> 0.95           </roughness>
+            <ao>        0.02           </ao>
+            <emissive>  0.00           </emissive>
+        </archetype>
+    </matdef>
+</matfile>

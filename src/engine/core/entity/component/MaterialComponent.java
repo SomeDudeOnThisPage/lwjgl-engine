@@ -1,32 +1,30 @@
 package engine.core.entity.component;
 
-import engine.core.gfx.material.Material;
-import engine.core.gfx.texture.Texture;
-import org.joml.Vector3f;
+import engine.core.gfx.material.MaterialArchetype;
 
 public class MaterialComponent extends EntityComponent
 {
-  public Material material;
+  public MaterialArchetype material;
 
   public MaterialComponent()
   {
     this("white");
   }
 
-  public MaterialComponent(Material material)
+  public MaterialComponent(MaterialArchetype material)
   {
     this.material = material;
   }
 
   public MaterialComponent(String texture)
   {
-    this.material = new Material(
+    /*this.material = new MaterialArchetype(
       new Vector3f(0.1f, 0.1f, 0.1f),
       new Vector3f(1.0f, 1.0f, 1.0f),
       new Vector3f(1.0f, 1.0f, 1.0f),
       0.4f
     );
 
-    this.material.addMap(0, new Texture(texture));
+    this.material.addMap(0, new Texture(texture));*/
   }
 }

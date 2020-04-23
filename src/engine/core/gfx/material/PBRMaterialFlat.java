@@ -2,8 +2,9 @@ package engine.core.gfx.material;
 
 import engine.core.gfx.batching.AssetManager;
 import org.joml.Vector3f;
+import org.w3c.dom.Element;
 
-public class PBRMaterialFlat extends Material
+public class PBRMaterialFlat extends MaterialArchetype
 {
   public static final int UNIFORM_MATERIAL_INSTANCE_BYTES = 32;
 
@@ -12,6 +13,36 @@ public class PBRMaterialFlat extends Material
   private float roughness;
   private float metallic;
   private float emissive;
+
+  @Override
+  public MaterialArchetype load(Element xml)
+  {
+    // get color values from color tag as string array
+    String[] colors = xml.getElementsByTagName("color")
+      .item(0)
+      .getTextContent()
+      .trim()
+      .split("\\s+");
+
+    Vector3f color = new Vector3f(
+      Float.valueOf(colors[0]), // red
+      Float.valueOf(colors[1]), // green
+      Float.valueOf(colors[2])  // blue
+    );
+
+    float metallic =  Float.valueOf(xml.getElementsByTagName("metallic")  .item(0).getTextContent());
+    float roughness = Float.valueOf(xml.getElementsByTagName("roughness") .item(0).getTextContent());
+    float ao =        Float.valueOf(xml.getElementsByTagName("ao")        .item(0).getTextContent());
+    float emissive =  Float.valueOf(xml.getElementsByTagName("emissive")  .item(0).getTextContent());
+
+    this.color.set(color);
+    this.ao         = ao;
+    this.metallic   = metallic;
+    this.roughness  = roughness;
+    this.emissive   = emissive;
+
+    return this;
+  }
 
   @Override
   public void bind()

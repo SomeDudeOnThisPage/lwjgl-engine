@@ -267,13 +267,17 @@ public class Assimp
     assert scene != null;
     int numMaterials = scene.mNumMaterials();
     PointerBuffer aiMaterials = scene.mMaterials();
-    //ArrayList<Material> materials = new ArrayList<>();
+    //ArrayList<MaterialArchetype> materials = new ArrayList<>();
+
+    ArrayList<String> materials = new ArrayList<>();
 
     for (int i = 0; i < numMaterials; i++)
     {
       assert aiMaterials != null;
       AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-      //processMaterial(aiMaterial, materials, texturesDir);
+      AIString name = AIString.create();
+      aiGetMaterialString(aiMaterial, AI_MATKEY_NAME, aiTextureType_NONE, 0, name);
+      materials.add(name.dataString());
     }
 
     int numMeshes = scene.mNumMeshes();
@@ -287,6 +291,7 @@ public class Assimp
       AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
       VertexArray mesh = processMesh(aiMesh, i);
       meshes[i] = mesh;
+      meshes[i].setInitialMaterial(materials.get(i));
     }
 
     return meshes;
