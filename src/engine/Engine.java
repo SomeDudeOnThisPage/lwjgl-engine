@@ -16,6 +16,7 @@ import engine.core.scene.SceneManager;
 import engine.core.Window;
 import engine.util.Assimp;
 import engine.util.ExceptionDialog;
+import engine.util.logging.Logger;
 import engine.util.settings.EngineInitialization;
 import engine.util.settings.Settings;
 
@@ -50,15 +51,24 @@ public class Engine
 
   public static boolean canRender = false;
 
+  private static boolean tick = false;
   /**
    * Returns the current time since the start of the {@link Engine} in {@link java.util.concurrent.TimeUnit#SECONDS}.
    * @return The time since the start of the {@link Engine} in {@link java.util.concurrent.TimeUnit#SECONDS}.
    */
   public static double time()
   {
+    if (!tick)
+    {
+      Logger.info("initial window time: " + (glfwGetTime() * 1000.0));
+      Logger.info("initial system time: " + System.currentTimeMillis());
+      Logger.info("engine running on " + (Settings.getb("WindowTime") ? "window time" : "system time"));
+      tick = true;
+    }
+
     if (Settings.getb("WindowTime"))
     {
-      return glfwGetTime();
+      return glfwGetTime() * 1000.0;
     }
     return System.currentTimeMillis();
   }
@@ -111,7 +121,6 @@ public class Engine
     Shader.terminate();
     Filter.terminate();
     FrameBuffer.terminate();
-    DeferredMeshBatcher.terminate();
 
     // cleanup Bullet resources
     Assimp.terminate();

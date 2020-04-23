@@ -2,7 +2,7 @@ package engine.core.entity;
 
 import engine.Engine;
 import engine.core.entity.component.EntityComponent;
-import engine.core.entity.component.ScriptComponent;
+import engine.core.entity.component.Behaviour;
 import engine.core.scene.Scene;
 
 import java.util.ArrayList;
@@ -15,14 +15,14 @@ import java.util.UUID;
  * different {@link engine.core.entity.system.UpdateSystem}s of the {@link EntityComponentSystem}.
  * An {@link Entity} can only have one component of each type at one time, when adding a new
  * {@link EntityComponent} of one type again, the old component will simply be overridden completely.
- * <p>An entity can also contain a set of {@link engine.core.entity.component.ScriptComponent}s. These
+ * <p>An entity can also contain a set of {@link Behaviour}s. These
  * act somewhat like self-contained systems, in the sense that they possess their own
- * {@link engine.core.entity.component.ScriptComponent} method, in which custom computation
- * can take place. Attaching a {@link engine.core.entity.component.ScriptComponent} can be done the same
+ * {@link Behaviour} method, in which custom computation
+ * can take place. Attaching a {@link Behaviour} can be done the same
  * way as attaching an {@link EntityComponent}, however, they are managed separately in the {@link EntityComponentSystem}
  * and executed before any {@link engine.core.entity.system.UpdateSystem}s' code is executed.
- * When attaching {@link engine.core.entity.component.ScriptComponent}s, make sure that all required data you
- * wish to assign in the {@link ScriptComponent} method is already available (e.g. required components)
+ * When attaching {@link Behaviour}s, make sure that all required data you
+ * wish to assign in the {@link Behaviour} method is already available (e.g. required components)
  * are already assigned.</p>
  * <p>An {@link Entity} can be indexed in custom code from the {@link EntityComponentSystem} when an unique
  * {@link String} identifier has passed to the entities' constructor. Note that entities subclassing this
@@ -47,13 +47,12 @@ public class Entity
    * A {@link HashMap} of {@link EntityComponent}s attached to this {@link Entity} indexed by their
    * {@link Class} identifier.
    */
-  private HashMap<Class, EntityComponent> components = new HashMap<>();
+  private HashMap<Class<?>, EntityComponent> components = new HashMap<>();
 
   /**
-   * The {@link HashMap} of {@link ScriptComponent}s (MonoBehaviours) attached to this {@link Entity}.
+   * The {@link HashMap} of {@link Behaviour}s (MonoBehaviours) attached to this {@link Entity}.
    */
-  //private ArrayList<ScriptComponent> scripts = new ArrayList<>();
-  private HashMap<Class, ScriptComponent> scripts = new HashMap<>();
+  private HashMap<Class<?>, Behaviour> scripts = new HashMap<>();
 
   /**
    * The child {@link Entity} instances of this {@link Entity} in the {@link Engine}s'
@@ -97,9 +96,9 @@ public class Entity
   {
     component.entity = this;
 
-    if (component.getClass().getSuperclass().equals(ScriptComponent.class))
+    if (component.getClass().getSuperclass().equals(Behaviour.class))
     {
-      this.scripts.put(component.getClass(), (ScriptComponent) component);
+      this.scripts.put(component.getClass(), (Behaviour) component);
       component.onComponentAttached();
     }
     else
@@ -122,7 +121,7 @@ public class Entity
     return this.parent;
   }
 
-  public ArrayList getChildren()
+  public ArrayList<Entity> getChildren()
   {
     return this.children;
   }
@@ -157,7 +156,7 @@ public class Entity
    */
   public <T extends EntityComponent> T get(Class<T> component)
   {
-    if (component.getSuperclass() == ScriptComponent.class)
+    if (component.getSuperclass() == Behaviour.class)
     {
       if (!this.scripts.containsKey(component))
       {
@@ -183,13 +182,13 @@ public class Entity
   }
 
   /**
-   * Updates this Entities' {@link ScriptComponent}s.
+   * Updates this Entities' {@link Behaviour}s.
    * This method should be called by the {@link EntityComponentSystem} internally, and not be overridden.
-   * @param scene The {@link Scene} the {@link ScriptComponent}s should base their updates on.
+   * @param scene The {@link Scene} the {@link Behaviour}s should base their updates on.
    */
   public final void update(Scene scene)
   {
-    for (ScriptComponent script : this.scripts.values())
+    for (Behaviour script : this.scripts.values())
     {
       script.update(scene);
     }

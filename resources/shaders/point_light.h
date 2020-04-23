@@ -1,7 +1,9 @@
-#define MAX_SHADOW_MAPS ENGINE_IMPORT_VALUE maxshadowmaps
+//#define MAX_SHADOW_MAPS ENGINE_IMPORT_VALUE maxshadowmaps
 // better syntax, to be implemented: '#import variablename : DEFINITION'
 // or: '#import variablename', setting the definition to the variable name directly
 // #import maxshadowmaps : MAX_SHADOW_MAPS
+
+#define MAX_POINT_LIGHTS ENGINE_IMPORT_VALUE_INTEGER <MaxPointLights>
 
 /**
   struct PointLight_t
@@ -18,8 +20,6 @@ struct PointLight_t
   // int shadow; // todo
 };
 
-uniform sampler2D shadows_point[16];
-
 /*
 // possibly forego using bindless textures in favour of compatability?
 // and set some int in a point-lights struct, ignoring shadows if it's -1?
@@ -29,6 +29,6 @@ uniform sampler2D shadows_point[16];
 
 layout (std140, binding = 1) uniform ub_point_lights
 {
-  PointLight_t u_point_lights[256]; // 256 * 16 * 3
+  PointLight_t u_point_lights[MAX_POINT_LIGHTS]; // 256 * 16 * 3
   int u_num_point_lights;
 };

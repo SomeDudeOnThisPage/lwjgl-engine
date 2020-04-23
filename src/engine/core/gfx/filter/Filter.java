@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL20C.*;
 public class Filter extends Shader
 {
   public static final int FILTER_COLOR_BUFFER_BINDING = 0;
-  public static final int FILTER_DEPTH_BUFFER_BINDING = 1;
+  public static final int FILTER_COLOR_ARRAY_BUFFER_BINDING = 1;
 
   private static HashMap<String, Filter> loaded = new HashMap<>();
 

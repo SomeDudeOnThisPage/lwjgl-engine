@@ -15,13 +15,15 @@ import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class CharacterControllerComponent extends ScriptComponent
+public class CharacterControllerComponent extends Behaviour
 {
   private static final float SPEED_MULTIPLIER = 5.0f;
   private static final float PLAYER_HEIGHT = 1.5f;
   private static final float PLAYER_WIDTH = 0.75f;
   private static final float AIR_STRAFE_MODIFIER = 2.0f;
   private static final float JUMP_MODIFIER = 1.0f;
+
+  private static final float MAX_SLOPE_ANGLE_RAD = 0.5f;
 
   private boolean grounded;
 
@@ -69,7 +71,7 @@ public class CharacterControllerComponent extends ScriptComponent
 
       float degrees = (float) (180.0f - Math.toDegrees(normal.angle(normalPlayer)));
 
-      if (from.y - result.y < (0.1f + degrees))
+      if (from.y - result.y < (MAX_SLOPE_ANGLE_RAD + degrees))
       {
         this.grounded = true;
       }
@@ -159,14 +161,13 @@ public class CharacterControllerComponent extends ScriptComponent
     if (Input.keyDown(GLFW_KEY_SPACE))
     {
       move.y = JUMP_MODIFIER;
-      //this.controller.jump();
     }
     else
     {
       move.y = 0.0f;
     }
 
-    move.mul(SPEED_MULTIPLIER /* (float) scene.getDeltaTime()*/);
+    move.mul(SPEED_MULTIPLIER /* (float) scene.getDeltaTime() */);
 
     if (this.grounded)
     {

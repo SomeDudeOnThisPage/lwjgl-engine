@@ -13,6 +13,7 @@ import engine.core.rendering.GBuffer;
 import engine.core.rendering.RenderStage;
 import engine.core.scene.Scene;
 import engine.core.scene.SceneGraph;
+import engine.util.settings.Settings;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import static org.lwjgl.opengl.GL42C.*;
 
 public class PointLightSystem extends UpdateSystem implements IRenderSystem
 {
-  private static final int MAX_POINT_LIGHTS = 256;
   private static final int POINT_LIGHT_BYTES = 3 * UniformBuffer.OFFSET_VEC4F;
 
   private Shader shader;
@@ -71,7 +71,7 @@ public class PointLightSystem extends UpdateSystem implements IRenderSystem
       i++;
     }
 
-    this.lights.setUniform(i, MAX_POINT_LIGHTS * POINT_LIGHT_BYTES);
+    this.lights.setUniform(i, Settings.geti("MaxPointLights") * POINT_LIGHT_BYTES);
 
     VertexArray.empty.bind();
     VertexArray.postRenderPass();
@@ -87,7 +87,7 @@ public class PointLightSystem extends UpdateSystem implements IRenderSystem
     this.shader = Shader.getInstance("deferred/point_lighting");
     this.lights = new UniformBuffer(
       UniformBuffer.N_BYTES +
-        POINT_LIGHT_BYTES * MAX_POINT_LIGHTS,
+        POINT_LIGHT_BYTES * Settings.geti("MaxPointLights"),
       1
     );
   }

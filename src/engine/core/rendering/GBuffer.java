@@ -105,7 +105,7 @@ public class GBuffer extends FrameBuffer
     this.bind();
 
     // create position attachment
-    this.position = new Texture(this.width, this.height, GL_RGB16F, GL_RGB, GL_FLOAT);
+    this.position = new Texture(this.width, this.height, GL_RGB32F, GL_RGB, GL_FLOAT);
     this.addTexture(this.position, GL_COLOR_ATTACHMENT0);
 
     // create normal attachment

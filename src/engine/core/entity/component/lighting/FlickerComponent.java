@@ -1,11 +1,11 @@
 package engine.core.entity.component.lighting;
 
 import engine.Engine;
-import engine.core.entity.component.ScriptComponent;
+import engine.core.entity.component.Behaviour;
 import engine.core.scene.Scene;
 import org.joml.Vector3f;
 
-public class FlickerComponent extends ScriptComponent
+public class FlickerComponent extends Behaviour
 {
   private Vector3f clq;
 

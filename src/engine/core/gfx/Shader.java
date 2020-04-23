@@ -134,6 +134,12 @@ public class Shader
             "injected by the engine automatically, remove any '#version' statements in the shader code.");
         }
 
+        if (line.contains("ENGINE_IMPORT_VALUE_INTEGER"))
+        {
+          String variable = line.substring(line.indexOf("<") + 1, line.indexOf(">"));
+          line = line.replace("ENGINE_IMPORT_VALUE_INTEGER <" + variable + ">", String.valueOf(Settings.geti(variable)));
+        }
+
         output.append(line).append("\n");
         i++;
       }

@@ -1,6 +1,7 @@
 package engine.core.gfx.texture;
 
 import engine.util.Resource;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.stb.STBImage;
@@ -24,6 +25,16 @@ public class Texture
   protected ITextureFilter filter;
   protected TextureWrap wrap;
   protected TextureFormat format;
+
+  public int width()
+  {
+    return this.width;
+  }
+
+  public int height()
+  {
+    return this.height;
+  }
 
   public int getID() { return this.id; }
 
@@ -71,6 +82,36 @@ public class Texture
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap.s());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap.t());
+
+    this.filter.apply(GL_TEXTURE_2D);
+    this.unbind();
+  }
+
+  public Texture(Vector2i size, TextureFormat format, TextureWrap wrap, ITextureFilter filter)
+  {
+    this.id = glGenTextures();
+    this.width = size.x;
+    this.height = size.y;
+
+    this.format = format;
+    this.filter = filter;
+    this.wrap = wrap;
+
+    glBindTexture(GL_TEXTURE_2D, this.id);
+    glTexImage2D(
+      GL_TEXTURE_2D,
+      0,
+      format.internal(),
+      this.width,
+      this.height,
+      0,
+      format.type(),
+      format.data(),
+      (ByteBuffer) null
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this.wrap.s());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this.wrap.t());
 
     this.filter.apply(GL_TEXTURE_2D);
     this.unbind();

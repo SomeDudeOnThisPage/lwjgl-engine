@@ -22,6 +22,8 @@ public class PhysicsEngine
   private btBroadphaseInterface broadphase;
   private btConstraintSolver solver;
 
+  private Vector3 gravity;
+
   /**
    * Updates the physics systems' internal dynamics world by a given time step.
    * @param dt Delta time since last update.
@@ -29,8 +31,8 @@ public class PhysicsEngine
   public void update(double dt)
   {
     this.dt = dt / 1000.0f;
-    //this.world.stepSimulation((float) this.dt, 5);
-    this.barrier = this.executor.submit(this.thread);
+    this.world.stepSimulation((float) this.dt, 5);
+    //this.barrier = this.executor.submit(this.thread);
   }
 
   public btDynamicsWorld world()
@@ -60,7 +62,7 @@ public class PhysicsEngine
 
   public void join()
   {
-    try
+    /*try
     {
       if (this.barrier != null && !this.barrier.isDone())
       {
@@ -70,7 +72,7 @@ public class PhysicsEngine
     catch (InterruptedException | ExecutionException e)
     {
       e.printStackTrace();
-    }
+    }*/
   }
 
   public void terminate()
@@ -95,7 +97,7 @@ public class PhysicsEngine
    */
   public PhysicsEngine()
   {
-    this.thread = () -> this.world.stepSimulation((float) this.dt, 10);
+    this.thread = () -> this.world.stepSimulation((float) this.dt);
 
     this.dt = 1;
     this.executor = Executors.newSingleThreadExecutor();
@@ -106,6 +108,7 @@ public class PhysicsEngine
     this.solver = new btSequentialImpulseConstraintSolver();
 
     this.world = new btDiscreteDynamicsWorld(this.dispatcher, this.broadphase, this.solver, this.config);
-    this.world.setGravity(new Vector3(0.0f, -9.8f, 0.0f));
+    this.gravity = new Vector3(0.0f, -9.8f, 0.0f);
+    this.world.setGravity(this.gravity);
   }
 }

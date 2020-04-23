@@ -1,7 +1,7 @@
 package engine.core.rendering;
 
 import engine.Engine;
-import engine.core.entity.system.rendering.SSRRenderingSystem;
+import engine.core.Input;
 import engine.core.gfx.filter.*;
 import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
@@ -9,10 +9,11 @@ import engine.core.gfx.VertexArray;
 import engine.core.gfx.shadow.ShadowMapBuffer;
 import engine.core.gfx.texture.Texture;
 import engine.core.scene.Scene;
-import org.lwjgl.system.NonnullDefault;
 
 import java.util.ArrayList;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
 import static org.lwjgl.opengl.GL30C.*;
 
 /**
@@ -158,29 +159,46 @@ public class DeferredRenderer extends Renderer
 
     glEnable(GL_DEPTH_TEST);
 
-    // todo: make this nicer, ideally without blitting
-
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, this.sbuffer.getID());
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
-
-    glBlitFramebuffer(0, 0, this.sbuffer.getWidth(), this.sbuffer.getHeight(),
-      0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
-      GL_COLOR_BUFFER_BIT,
-      GL_NEAREST
-    );
-
     glBindFramebuffer(GL_READ_FRAMEBUFFER, this.fbuffer.getID());
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
     glReadBuffer(this.fbuffer.getCurrentAttachment());
 
     glBlitFramebuffer(0, 0, this.fbuffer.getWidth(), this.fbuffer.getHeight(),
-                      0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
-                      GL_COLOR_BUFFER_BIT,
-                      GL_NEAREST
+      0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
+      GL_COLOR_BUFFER_BIT,
+      GL_LINEAR
     );
+
+    if (Input.keyDown(GLFW_KEY_E))
+    {
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, this.sbuffer.getID());
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+      glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+      glBlitFramebuffer(0, 0, this.sbuffer.getWidth(), this.sbuffer.getHeight(),
+        0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
+        GL_COLOR_BUFFER_BIT,
+        GL_NEAREST
+      );
+    }
+
+    if (Input.keyDown(GLFW_KEY_R))
+    {
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, this.sbuffer.getID());
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+      glReadBuffer(GL_COLOR_ATTACHMENT7);
+
+      glBlitFramebuffer(0, 0, this.sbuffer.getWidth(), this.sbuffer.getHeight(),
+        0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
+        GL_COLOR_BUFFER_BIT,
+        GL_NEAREST
+      );
+    }
+    // debug frustum
+
   }
 
   @Override

@@ -96,15 +96,15 @@ public class Window
     {
       case NORMAL:
         this.cursor = CURSOR.NORMAL;
-        glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        //glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         break;
       case HIDDEN:
         this.cursor = CURSOR.HIDDEN;
-        glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        //glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         break;
       case DISABLED:
         this.cursor = CURSOR.DISABLED;
-        glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        //glfwSetInputMode(this.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         break;
     }
   }

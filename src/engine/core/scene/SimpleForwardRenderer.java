@@ -2,7 +2,6 @@ package engine.core.scene;
 
 import engine.Engine;
 import engine.core.entity.Entity;
-import engine.core.entity.component.ControlComponent;
 import engine.core.entity.component.ProjectionComponent;
 import engine.core.entity.component.TransformComponent;
 import engine.core.gfx.Shader;

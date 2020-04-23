@@ -8,7 +8,6 @@ import engine.core.Window;
 import engine.core.entity.component.physics.CollisionShapeComponent;
 import engine.core.scene.Player;
 import engine.core.scene.Scene;
-import engine.util.settings.EngineSetting;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector2d;
@@ -16,7 +15,7 @@ import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 
-public class FPCMouseOrientationComponent extends ScriptComponent
+public class FPCMouseOrientationComponent extends Behaviour
 {
   private static final Vector3f ANGLE_UP = new Vector3f(0.0f, 1.0f, 0.0f);
   private static final Vector3f ANGLE_RIGHT = new Vector3f(1.0f, 0.0f, 0.0f);

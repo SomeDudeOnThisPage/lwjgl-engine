@@ -5,6 +5,7 @@ import engine.core.entity.system.IRenderSystem;
 import engine.core.entity.system.UpdateSystem;
 import engine.core.rendering.RenderStage;
 import engine.core.scene.Scene;
+import engine.util.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,13 +22,15 @@ public class EntityComponentSystem
   private HashMap<String, Entity> identifiers;
 
   /** Active system map. */
-  private HashMap<Class, UpdateSystem> systems;
+  private HashMap<Class<?>, UpdateSystem> systems;
 
   /** Active renderable system map. */
-  private HashMap<RenderStage, HashMap<Class, IRenderSystem>> rendersystems;
+  private HashMap<RenderStage, HashMap<Class<?>, IRenderSystem>> rendersystems;
 
   /** Entities mapped to systems. */
-  private HashMap<Class, ArrayList<Entity>> sm;
+  private HashMap<Class<?>, ArrayList<Entity>> sm;
+
+  private ArrayList<Entity> tba = new ArrayList<>();
 
   public <T extends UpdateSystem> ArrayList<Entity> getSystemEntities(Class<T> system)
   {
@@ -43,20 +46,21 @@ public class EntityComponentSystem
   {
     if (this.sm.get(system.getClass()) == null)
     {
-      java.lang.System.err.println("[INFO] system " + system + " is not mapped in the ecs");
+      Logger.warning("[ECS] attempted to add entity '" + entity.id() + "' to system '" + system.getClass().getSimpleName() + "'," +
+        "which is not present in the entity component system.");
       return;
     }
 
     if (this.sm.get(system.getClass()).contains(entity))
     {
-      java.lang.System.err.println("[INFO] attempted to add duplicate entity to system");
+      Logger.info("[ECS] attempted to add duplicate entity '" + entity.id() + "' to system '" + system.getClass().getSimpleName() + "'");
       return;
     }
 
     if (system.components().length > 0)
     {
       boolean hasRequired = true;
-      for (Class listen : system.components())
+      for (Class<? extends EntityComponent> listen : system.components())
       {
         if (entity.get(listen) == null)
         {
@@ -67,7 +71,7 @@ public class EntityComponentSystem
 
       if (hasRequired)
       {
-        java.lang.System.out.println("[INFO] added entity " + entity.id() + " to system " + system);
+        Logger.info("[ECS] added entity " + entity.id() + " to system '" + system.getClass().getSimpleName() + "'");
         this.sm.get(system.getClass()).add(entity);
         system.added(entity);
       }
@@ -102,6 +106,24 @@ public class EntityComponentSystem
     {
       system.update(this.scene, this.getSystemEntities(system.getClass()));
     }
+
+    for (Entity entity : this.tba)
+    {
+      // generate entity ID
+      this.entities.put(entity.id(), entity);
+
+      if (entity.name() != null)
+      {
+        this.identifiers.put(entity.name(), entity);
+      }
+
+      for (UpdateSystem system : this.systems.values())
+      {
+        this.mapEntitySystem(entity, system);
+      }
+    }
+
+    this.tba.clear();
   }
 
   /**
@@ -111,18 +133,7 @@ public class EntityComponentSystem
    */
   public void addEntity(Entity entity)
   {
-    // generate entity ID
-    this.entities.put(entity.id(), entity);
-
-    if (entity.name() != null)
-    {
-      this.identifiers.put(entity.name(), entity);
-    }
-
-    for (UpdateSystem system : this.systems.values())
-    {
-      this.mapEntitySystem(entity, system);
-    }
+    this.tba.add(entity);
   }
 
   /**
@@ -151,8 +162,34 @@ public class EntityComponentSystem
     }
   }
 
-  public <T extends EntityComponent> void remove(UUID id, Class<T> component) {}
+  public <T extends EntityComponent> void remove(UUID id, Class<T> component)
+  {
+    // todo: removal queue
+  }
 
+  public <T extends EntityComponent> void remove(String id, Class<T> component)
+  {
+    // todo: removal queue
+  }
+
+  public <T extends EntityComponent> void remove(Entity entity, Class<T> component)
+  {
+    // todo: removal queue
+  }
+
+  public <T extends EntityComponent> void remove(Entity entity)
+  {
+    // todo: remove components
+    // todo: remove entity
+  }
+
+  /**
+   * Returns an {@link EntityComponent} of a given {@link Entity} defined by the {@link EntityComponent}s' {@link Class}
+   * identifier.
+   * @param entity The {@link Entity} containing the {@link EntityComponent}.
+   * @param component The {@link Class} of the {@link EntityComponent}.
+   * @return The {@link EntityComponent} attached to the {@link Entity}, or {@code null}, if none was found.
+   */
   public <T extends EntityComponent> T get(Entity entity, Class<T> component)
   {
     if (!this.has(entity, component))
@@ -161,14 +198,23 @@ public class EntityComponentSystem
     }
 
     return entity.get(component);
-    // return component.cast(this.ecm.get(entity).get(component));
   }
 
+  /**
+   * Returns an {@link Entity}-Handle by a given {@link UUID}.
+   * @param id The {@link UUID} of the {@link Entity} in question.
+   * @return The {@link Entity}, or {@code null}, if none was found.
+   */
   public Entity get(UUID id)
   {
-    return this.entities.get(id);
+    return this.entities.getOrDefault(id, null);
   }
 
+  /**
+   * Returns an {@link Entity}-Handle by a given {@link String}-identifier.
+   * @param identifier The {@link String}-identifier of the {@link Entity} in question.
+   * @return The {@link Entity}, or {@code null}, if none was found.
+   */
   public Entity get(String identifier)
   {
     return this.identifiers.getOrDefault(identifier, null);
@@ -176,12 +222,20 @@ public class EntityComponentSystem
 
   public <T extends UpdateSystem> T get(Class<T> system)
   {
-    return (T) this.systems.get(system);
+    T value = system.cast(this.systems.getOrDefault(system, null));
+
+    if (value == null)
+    {
+      Logger.warning("[ECS] attempted to retrieve invalid system '" + system.getSimpleName() + "'");
+    }
+
+    return value;
   }
 
   /**
-   * Adds a system to this ECS.
-   * Any entities that fulfill the systems' component requirements will be retroactively mapped to the system.
+   * Adds an {@link UpdateSystem} to this {@link EntityComponentSystem}.
+   * Any {@link Entity} instances that fulfill the systems' component requirements will be retroactively mapped to the
+   * system.
    * This is a costly operation, ideally all systems should be added before any entities were initialized.
    * @param system system
    */
@@ -189,7 +243,7 @@ public class EntityComponentSystem
   {
     if (this.systems.containsKey(system.getClass()))
     {
-      java.lang.System.err.println("[INFO] cannot add the same system twice");
+      Logger.warning("[ECS] attempted to add duplicate system '" + system.getClass().getSimpleName() + "'");
       return;
     }
 

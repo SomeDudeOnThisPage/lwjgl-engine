@@ -195,12 +195,17 @@ public class Assimp
     return mesh;
   }
 
+  private static final ArrayList<AIScene> scenes = new ArrayList<>();
+  private static final ArrayList<ByteBuffer> buffers = new ArrayList<>();
+
   public static btTriangleIndexVertexArray load_collision_mesh_tri(String path)
   {
     AIScene scene = aiImportFile("resources/models/" + path + ".obj", aiProcess_ImproveCacheLocality |
       aiProcess_JoinIdenticalVertices |
       aiProcess_Triangulate |
       aiProcess_CalcTangentSpace);
+
+    scenes.add(scene);
 
     btTriangleIndexVertexArray shape = new btTriangleIndexVertexArray();
 
@@ -229,6 +234,9 @@ public class Assimp
 
       vertices.flip();
       indices.flip();
+
+      buffers.add(vertices);
+      buffers.add(indices);
 
       btIndexedMesh indexed = new btIndexedMesh();
       indexed.setIndexType(PHY_ScalarType.PHY_INTEGER);

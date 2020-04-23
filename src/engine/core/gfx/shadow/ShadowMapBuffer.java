@@ -2,18 +2,21 @@ package engine.core.gfx.shadow;
 
 import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
+import engine.core.gfx.batching.AssetManager;
+import engine.core.gfx.filter.GaussianBlurFilter;
 import engine.core.gfx.texture.*;
+import engine.core.rendering.GBuffer;
 import engine.util.settings.Settings;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL30C.*;
-import static org.lwjgl.opengl.GL32C.glFramebufferTexture;
 
 public class ShadowMapBuffer extends FrameBuffer
 {
-  private static final int UNIFORM_DIRECTIONAL_SHADOW_BUFFER_TEXTURE_POSITION = 8;
+  private GaussianBlurFilter filter;
 
   /**
    * DrawBuffers for directional shadow maps.
@@ -28,7 +31,12 @@ public class ShadowMapBuffer extends FrameBuffer
   /**
    * Directional shadow maps.
    */
-  private TextureArray2D directional;
+  private Texture[] directional;
+
+  /**
+   * Directional shadow maps.
+   */
+  private Texture blur_temp;
 
   /**
    * Clears both the directional, as well as the point light shadow maps.
@@ -49,63 +57,54 @@ public class ShadowMapBuffer extends FrameBuffer
 
   public void bind(Shader shader)
   {
-    this.directional.bind(ShadowMapBuffer.UNIFORM_DIRECTIONAL_SHADOW_BUFFER_TEXTURE_POSITION);
-    shader.setUniform("u_directional_shadows", ShadowMapBuffer.UNIFORM_DIRECTIONAL_SHADOW_BUFFER_TEXTURE_POSITION);
+    int i = GBuffer.UNIFORM_LIGHTING_TEXTURE_BUFFER_POSITION + 1;
+    for (Texture texture : this.directional)
+    {
+      texture.bind(i);
+      shader.setUniform("u_shadow_map_2D_" + (i - (GBuffer.UNIFORM_LIGHTING_TEXTURE_BUFFER_POSITION + 1)), i);
+      i++;
+    }
+  }
+
+  public void blur(int layer)
+  {
+    glDrawBuffers(this.maps2D);
+    this.filter.applyLayer(
+      this.directional[layer],
+      GL_COLOR_ATTACHMENT0 + layer,
+      this.directional[this.directional.length - 2],
+      GL_COLOR_ATTACHMENT0 + this.directional.length - 2);
   }
 
   public ShadowMapBuffer()
   {
     super(Settings.geti("ShadowMapResolution"), Settings.geti("ShadowMapResolution"));
 
+    this.filter = new GaussianBlurFilter(1.0f);
+    float[] borderColor = {1.0f, 1.0f, 1.0f, 1.0f};
+
     this.bind();
 
-    this.directional = new TextureArray2D(
-      Settings.geti("ShadowMapResolution"),
-      Settings.geti("ShadowMapResolution"),
-      Settings.geti("Max2DShadowMaps"),
-      new TextureFilterLinear(),
-      new TextureWrap(GL_CLAMP_TO_BORDER),
-      new TextureFormat(GL_RGBA32F, GL_RGBA, GL_FLOAT)
-    );
+    this.directional = new Texture[Settings.geti("Max2DShadowMaps") + 1];
+    this.maps2D = BufferUtils.createIntBuffer(Settings.geti("Max2DShadowMaps") + 1);
 
-    this.directional.bind();
-    float[] borderColor = {0.0f, 0.0f, 0.0f, 1.0f};
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-    this.maps2D = BufferUtils.createIntBuffer(Settings.geti("Max2DShadowMaps"));
-
-    //glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, this.directional.getID(), 0, 0);
-    //glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, this.directional.getID(), 0, 1);
-
-    TextureArray2D depth = new TextureArray2D(
-      Settings.geti("ShadowMapResolution"),
-      Settings.geti("ShadowMapResolution"),
-      Settings.geti("Max2DShadowMaps"),
-      new TextureFilterLinear(),
-      new TextureWrap(GL_CLAMP_TO_BORDER),
-      new TextureFormat(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT)
-    );
-
-    depth.bind();
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-    for (int i = 0; i < Settings.geti("Max2DShadowMaps"); i++)
+    for (int i = 0; i <= Settings.geti("Max2DShadowMaps"); i++)
     {
-      this.maps2D.put(GL_COLOR_ATTACHMENT0 + i);
-      this.directional.bind();
-      glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, this.directional.getID(), 0, i);
+      this.directional[i] = new Texture(
+        new Vector2i(Settings.geti("ShadowMapResolution")),
+        new TextureFormat(GL_RGBA32F, GL_RGBA, GL_FLOAT),
+        new TextureWrap(GL_CLAMP_TO_BORDER),
+        new TextureFilterBilinear()
+      );
 
-      depth.bind();
-      glFramebufferTexture3D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_ARRAY, depth.getID(), 0, 0);
-      glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth.getID(),0, i);
+      this.directional[i].bind();
+      glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+      this.addTexture(this.directional[i], GL_COLOR_ATTACHMENT0 + i);
+      this.maps2D.put(GL_COLOR_ATTACHMENT0 + i);
     }
     this.maps2D.flip();
 
-    this.directional.unbind();
-    depth.unbind();
-
-    System.err.println(glGetError());
-    System.err.println(glGetError());
-
+    this.addDepthTexture(Settings.geti("ShadowMapResolution"), Settings.geti("ShadowMapResolution"));
   }
 }

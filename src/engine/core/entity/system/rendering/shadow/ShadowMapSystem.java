@@ -5,7 +5,6 @@ import engine.core.Input;
 import engine.core.entity.Entity;
 import engine.core.entity.component.EntityComponent;
 import engine.core.entity.component.MeshComponent;
-import engine.core.entity.component.ProjectionComponent;
 import engine.core.entity.component.TransformComponent;
 import engine.core.entity.component.lighting.DirectionalLightSourceComponent;
 import engine.core.entity.component.shadow.ShadowSourceComponent;
@@ -13,17 +12,23 @@ import engine.core.entity.system.IRenderSystem;
 import engine.core.entity.system.UpdateSystem;
 import engine.core.gfx.Shader;
 import engine.core.gfx.VertexArray;
+import engine.core.gfx.batching.AssetManager;
+import engine.core.rendering.DeferredRenderer;
 import engine.core.rendering.RenderStage;
+import engine.core.scene.Player;
 import engine.core.scene.Scene;
 import engine.core.scene.SceneGraph;
 import engine.util.settings.Settings;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.ArrayList;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_O;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_K;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_L;
 import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL20C.glDrawBuffers;
+import static org.lwjgl.opengl.GL30C.GL_COLOR_ATTACHMENT0;
 
 public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
 {
@@ -51,63 +56,24 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
     return lsm;
   }
 
-  @Override
-  public void render(Scene scene, ArrayList<Entity> entities)
+  protected Vector3f getCenter(Vector3f min, Vector3f max, Matrix4f view)
   {
-    // bind depth shader
-    this.shader.bind();
-    int layer = 0;
+    float x = (min.x - max.x) / 2.0f;
+    float y = (min.y - max.y) / 2.0f;
+    float z = (min.z - max.z) / 2.0f;
+    Vector4f center = new Vector4f(x, y, z, 1);
+    Matrix4f inverted = new Matrix4f(view).invert();
+    Vector4f transform = inverted.transform(center);
 
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_FRONT);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    System.err.println(transform.x + " " + transform.y + " " + transform.z);
 
-    for (Entity entity : this.enabled)
-    {
-      // construct orthographic light-space matrix
-      lsm.identity()
-        .ortho(-25, 25, -25, 25, 0.1f, 350.0f)
-        .lookAt(
-          new Vector3f(entity.get(TransformComponent.class).position).mul(0.1f),
-          //new Vector3f(entity.get(DirectionalLightSourceComponent.class).direction).mul(100.0f),
-          new Vector3f(0.0f),
-          new Vector3f(0.0f, 1.0f, 0.0f)
-        );
-
-      this.shader.setUniform("u_layer", layer);
-      this.shader.setUniform("u_light_space", lsm);
-
-      // render each shadow map to a layer of the array texture
-      for (Entity caster : scene.ecs().getSystemEntities(ShadowCasterCollection.class))
-      {
-        if (caster.get(MeshComponent.class).culling == GL_BACK)
-        {
-          glEnable(GL_CULL_FACE);
-          glCullFace(GL_FRONT);
-        }
-        else
-        {
-          glDisable(GL_CULL_FACE);
-          glCullFace(GL_BACK);
-        }
-
-        this.shader.setUniform("u_model", SceneGraph.constructTransform(caster));
-        for (VertexArray mesh : caster.get(MeshComponent.class).mesh)
-        {
-          mesh.render();
-        }
-      }
-
-      layer++;
-    }
-
-    glCullFace(GL_BACK);
-    glDisable(GL_CULL_FACE);
+    return new Vector3f(transform.x, transform.y, transform.z);
   }
 
+  private float lol = 25.0f;
+
   @Override
-  public void update(Scene scene, ArrayList<Entity> entities)
+  public void render(Scene scene, ArrayList<Entity> entities)
   {
     // clear the list of enabled shadow sources, and repopulate based on a condition (distance player <-> source)
     this.enabled.clear();
@@ -134,7 +100,86 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
         entity.get(DirectionalLightSourceComponent.class).shadowIndex = -1;
       }
     }
+
+    // bind depth shader
+    this.shader.bind();
+    int layer = 0;
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    float perspectiveLength = 25.0f;
+
+    Matrix4f projection = scene.getPlayer().getCamera().getProjection();
+    Matrix4f test = new Matrix4f().perspective(
+      projection.perspectiveFov(),
+      (float) Engine.window.getWidth() / (float) Engine.window.getHeight(),
+      projection.perspectiveNear(),
+      perspectiveLength
+    );
+    test.mul(new Matrix4f(scene.getPlayer().getCamera().getView()));
+
+    Vector3f min = new Vector3f();
+    Vector3f max = new Vector3f();
+
+    test.invert().frustumAabb(min, max);
+
+    float width = (max.x - min.x) / 2.0f;
+    float height = (max.y - min.y) / 2.0f;
+    float length = (max.z - min.z) / 2.0f;
+
+    if (Input.keyDown(GLFW_KEY_L))
+    {
+      lol += 0.1f;
+    }
+    if (Input.keyDown(GLFW_KEY_K))
+    {
+      lol -= 0.1f;
+    }
+
+    for (Entity entity : this.enabled)
+    {
+      // construct orthographic light-space matrix
+      Vector3f position = scene.getPlayer().getCamera().getPosition().negate();
+
+      ShadowMapSystem.lsm.identity()
+        .ortho(-25, 25, -25, 25, -25, 25)
+        //.rotateLocalX(-1.04f)
+        //.translate(position);
+        .lookAt(
+          //getCenter(min, max, scene.getPlayer().getCamera().getView()),
+          //new Vector3f(scene.getPlayer().getPosition()),
+          new Vector3f(scene.getPlayer().getCamera().getPosition()),
+          new Vector3f(entity.get(DirectionalLightSourceComponent.class).direction).mul(1000.0f),
+          new Vector3f(0.0f, 1.0f, 0.0f)
+        );
+
+      this.shader.setUniform("u_layer", layer);
+      this.shader.setUniform("u_light_space", lsm);
+
+      glDisable(GL_CULL_FACE);
+
+      // render each shadow map to a layer of the array texture
+      for (Entity caster : scene.ecs().getSystemEntities(ShadowCasterCollection.class))
+      {
+        this.shader.setUniform("u_model", SceneGraph.constructTransform(caster));
+        for (VertexArray mesh : caster.get(MeshComponent.class).mesh)
+        {
+          mesh.render();
+        }
+      }
+
+      ((DeferredRenderer) scene.getRenderer()).getSBuffer().blur(layer);
+
+      layer++;
+    }
+
+    glCullFace(GL_BACK);
+    glDisable(GL_CULL_FACE);
   }
+
+  @Override
+  public void update(Scene scene, ArrayList<Entity> entities) {}
 
   @Override
   public void added(Entity entity) {}
@@ -143,6 +188,6 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
   {
     this.enabled = new ArrayList<>();
     this.shader = Shader.getInstance("depth");
-    this.lsm = new Matrix4f();
+    lsm = new Matrix4f();
   }
 }

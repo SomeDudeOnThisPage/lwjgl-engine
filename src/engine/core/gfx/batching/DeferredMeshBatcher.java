@@ -51,7 +51,7 @@ public class DeferredMeshBatcher
   private static int modelVBO;
   private static int indexVBO;
 
-  private static MappedBuffer indirectBuffer = new MappedBuffer(GL_DRAW_INDIRECT_BUFFER);
+  /*private static MappedBuffer indirectBuffer = new MappedBuffer(GL_DRAW_INDIRECT_BUFFER);
   private static MappedBuffer vertexBuffer = new MappedBuffer(GL_ARRAY_BUFFER);
   private static MappedBuffer modelBuffer = new MappedBuffer(GL_ARRAY_BUFFER);
   private static MappedBuffer indexBuffer = new MappedBuffer(GL_ELEMENT_ARRAY_BUFFER);
@@ -103,22 +103,19 @@ public class DeferredMeshBatcher
     glBindVertexArray(0);
   }
 
-  /**
-   * Starts a new batch.
-   */
   public static void begin()
   {
     //DeferredMeshBatcher.batches.clear();
 
-    DeferredMeshBatcher.instance = 0;
-    DeferredMeshBatcher.base = 0;
+    // DeferredMeshBatcher.instance = 0;
+    // DeferredMeshBatcher.base = 0;
 
-    /*vertices = vertexBuffer.mapf(25 * 3 * 100);
+    vertices = vertexBuffer.mapf(25 * 3 * 100);
     elements = indexBuffer.mapi(25 * 3 * 100);
     models = modelBuffer.mapf(25 * 3 * 100);
     indirect = indirectBuffer.mapi(512);
 
-    glBindVertexArray(vao);*/
+    glBindVertexArray(vao);
 
     //vertexVBO.bind();
     glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
@@ -231,8 +228,7 @@ public class DeferredMeshBatcher
     vertexBuffer.bind();
     modelBuffer.bind();
     indexBuffer.bind();
-    indirectBuffer.bind();*/
-
+    indirectBuffer.bind();
     glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
@@ -256,11 +252,6 @@ public class DeferredMeshBatcher
     return DeferredMeshBatcher.instance;
   }
 
-  /**
-   * Adds a set of mesh data to the current batch.
-   * @param mesh mesh data
-   * @param material material data (bindless texture handles are a must)
-   */
   public static void batch(Mesh mesh, Matrix4f model, Material material, int instances)
   {
     // sanity checks
@@ -308,6 +299,59 @@ public class DeferredMeshBatcher
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);*/
-  }
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+  }*/
+
+
+    /*this.directional = new TextureArray2D(
+      Settings.geti("ShadowMapResolution"),
+      Settings.geti("ShadowMapResolution"),
+      Settings.geti("Max2DShadowMaps"),
+      new TextureFilterBilinear(),
+      new TextureWrap(GL_CLAMP_TO_BORDER),
+      new TextureFormat(GL_RGBA32F, GL_RGBA, GL_FLOAT)
+    );
+
+    this.directional.bind();
+    glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    this.directional.bind();
+    glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    TextureArray2D depth = new TextureArray2D(
+      Settings.geti("ShadowMapResolution"),
+      Settings.geti("ShadowMapResolution"),
+      Settings.geti("Max2DShadowMaps"),
+      new TextureFilterLinear(),
+      new TextureWrap(GL_CLAMP_TO_BORDER),
+      new TextureFormat(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT)
+    );
+
+    depth.bind();
+    glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    // create buffers
+    this.maps2D = BufferUtils.createIntBuffer(Settings.geti("Max2DShadowMaps") + 1);
+    for (int i = 0; i < Settings.geti("Max2DShadowMaps"); i++)
+    {
+      this.maps2D.put(GL_COLOR_ATTACHMENT0 + i);
+      this.directional.bind();
+      glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, this.directional.getID(), 0, i);
+
+      depth.bind();
+      //glFramebufferTexture3D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_ARRAY, depth.getID(), 0, 0);
+      glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth.getID(),0, i);
+      System.err.println(i);
+    }
+    // temporary blur texture
+    this.blur_temp.bind();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT8, GL_TEXTURE_2D, this.blur_temp.getID(), 0);
+
+    System.err.println(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+    this.maps2D.put(GL_COLOR_ATTACHMENT8);
+    this.maps2D.flip();
+
+    this.directional.unbind();
+    depth.unbind();*/
 }

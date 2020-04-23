@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.*;
 import engine.core.entity.Entity;
 import engine.core.entity.component.*;
+import engine.core.entity.component.debug.LightShooterComponent;
 import engine.core.entity.component.lighting.DirectionalLightSourceComponent;
 import engine.core.entity.component.lighting.FlickerComponent;
 import engine.core.entity.component.lighting.PointLightSourceComponent;
@@ -16,6 +17,7 @@ import engine.core.entity.component.shadow.ShadowCasterComponent;
 import engine.core.entity.component.shadow.ShadowSourceComponent;
 import engine.core.entity.system.*;
 import engine.core.entity.system.rendering.DirectionalLightingSystem;
+import engine.core.entity.system.rendering.SSRRenderingSystem;
 import engine.core.entity.system.rendering.debug.JBulletDebugRenderingSystem;
 import engine.core.entity.system.rendering.PointLightSystem;
 import engine.core.entity.system.rendering.shadow.ShadowCasterCollection;
@@ -43,9 +45,6 @@ public class GameScene extends Scene
     this.add(new SkyboxSystem());
     this.add(new PhysicsSystem());
 
-    // bleep bloop there goes the performance
-    this.add(new JBulletDebugRenderingSystem(this.physics()));
-
     // add rendering systems
     this.add(new DeferredMeshRenderingSystem());
     this.add(new DirectionalLightingSystem());
@@ -59,9 +58,9 @@ public class GameScene extends Scene
     this.player.add(this.player.getCamera());
 
     // add sun directional light
-    new Entity()
+    new Entity("sun")
       .add(new TransformComponent(
-        new Vector3f(0.0f, 200.0f, 200.0f),
+        new Vector3f(0.0f, 50.0f, 50.0f),
         new Quaternionf(),
         1.0f
       ))
@@ -119,7 +118,6 @@ public class GameScene extends Scene
 
     map.add(new CollisionShapeComponent(map, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("terrain"), true)));
     map.get(MeshComponent.class).material[0] = brown;
-    //map.get(MeshComponent.class).material[1] = grey;
     map.get(MeshComponent.class).culling = GL_FRONT;
 
     this.player.add(new MeshComponent(AssetManager.getMesh("capsule1x2")))
@@ -129,7 +127,8 @@ public class GameScene extends Scene
         0.75f
       ))
       .add(new CharacterControllerComponent())
-      .add(new ShadowCasterComponent());
+      .add(new ShadowCasterComponent())
+      .add(new LightShooterComponent());
 
     //
     // Create lantern entity.
@@ -178,9 +177,10 @@ public class GameScene extends Scene
 
     cabin.add(new CollisionShapeComponent(cabin, new btBvhTriangleMeshShape(Assimp.load_collision_mesh_tri("cabin"), true)));
 
-    Entity handheld = new Entity("hl")
+    Entity handheld = new Entity("handheld-lantern")
         .add(new MeshComponent(AssetManager.getMesh("handheld_lantern")))
-        .add(new TransformComponent());
+        .add(new TransformComponent())
+        .add(new ShadowCasterComponent());
 
     handheld.get(TransformComponent.class).position.x = 15.0f;
 
@@ -197,7 +197,7 @@ public class GameScene extends Scene
       .add(new FlickerComponent())
     );
 
-    handheld.add(new CollisionShapeComponent(this.get("hl"), 1.0f, new btBoxShape(new Vector3(0.15f, 0.15f, 0.15f))));
+    handheld.add(new CollisionShapeComponent(handheld, 1.0f, new btBoxShape(new Vector3(0.15f, 0.15f, 0.15f))));
     handheld.get(CollisionShapeComponent.class).body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
     handheld.get(CollisionShapeComponent.class).body.setAngularFactor(0.9f);
     handheld.get(CollisionShapeComponent.class).body.setDamping(0.9995f, 0.9995f);
@@ -233,6 +233,8 @@ public class GameScene extends Scene
     //constraint.getTranslationalLimitMotor().setCurrentLimitError(new btVector3(0.0f, 0.0f, 0.0f));
 
     this.physics().world().addConstraint(constraint);
+
+    ecs().get(SSRRenderingSystem.class);
   }
 
   @Override
