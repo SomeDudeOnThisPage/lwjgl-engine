@@ -31,7 +31,7 @@ public class TerrainRenderingSystem extends UpdateSystem implements IRenderSyste
     for (Entity entity : entities)
     {
       this.shader.setUniform("u_model", entity.get(TransformComponent.class).construct());
-      entity.get(MaterialComponent.class).material.bind(this.shader);
+      //entity.get(MaterialComponent.class).material.bind(this.shader);
       entity.get(TerrainComponent.class).mesh.render();
     }
   }

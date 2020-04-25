@@ -8,6 +8,16 @@ public abstract class Behaviour extends EntityComponent
   public abstract void update(Scene scene);
 
   /**
+   * Convenience shortcut retrieving the {@link TransformComponent} of the {@link Entity} this {@link Behaviour} is
+   * bound to.
+   * @return The {@link TransformComponent} of the {@link Entity} this {@link Behaviour} is bound to.
+   */
+  public TransformComponent transform()
+  {
+    return this.entity.get(TransformComponent.class);
+  }
+
+  /**
    * Returns an {@link EntityComponent} or {@link Behaviour} of the {@link Entity} this {@link Behaviour}
    * is attached to.
    * @param component A type parameter defining the {@link Class} of the {@link EntityComponent} or {@link Behaviour}.

@@ -1,7 +1,7 @@
-<matfile>
-    <matdef id="pbr-flat-grey" archetype="pbr-flat-color">
+<mtllib>
+    <mtldef id="pbr-flat-grey" archetype="MTL_ARCHETYPE_FLAT_COLOR">
         <properties>
-            <transparency value="false"/>
+            <transparency>false</transparency>
         </properties>
 
         <archetype>
@@ -11,9 +11,9 @@
             <ao>        0.02           </ao>
             <emissive>  0.00           </emissive>
         </archetype>
-    </matdef>
+    </mtldef>
 
-    <matdef id="pbr-flat-brown" archetype="pbr-flat-color">
+    <mtldef id="pbr-flat-brown" archetype="MTL_ARCHETYPE_FLAT_COLOR">
         <properties>
             <transparency value="false"/>
         </properties>
@@ -25,5 +25,40 @@
             <ao>        0.02           </ao>
             <emissive>  0.00           </emissive>
         </archetype>
-    </matdef>
-</matfile>
+    </mtldef>
+
+    <mtldef id="pbr-titanium" archetype="MTL_ARCHETYPE_TEXTURE">
+        <properties>
+            <transparency value="false"/>
+        </properties>
+
+        <archetype>
+            <wrap>CLAMP_TO_EDGE</wrap>
+            <filter bias="-0.1">TRILINEAR</filter>
+
+            <albedo>    /pbr/titanium/titanium_albedo.png             </albedo>
+            <normal>    /pbr/titanium/titanium_normal.png             </normal>
+            <metallic>  /pbr/titanium/titanium_metallic.png           </metallic>
+            <roughness> /pbr/titanium/titanium_roughness.png          </roughness>
+            <ao>        /pbr/titanium/titanium_ambient_occlusion.png  </ao>
+            <emissive>  /pbr/titanium/titanium_emissive.png           </emissive>
+        </archetype>
+    </mtldef>
+
+    <mtldef id="pbr-planks" archetype="MTL_ARCHETYPE_TEXTURE">
+        <properties>
+            <transparency value="false"/>
+        </properties>
+        <archetype>
+            <wrap>CLAMP_TO_EDGE</wrap>
+            <filter bias="-0.1">TRILINEAR</filter>
+
+            <albedo>    /pbr/planks/planks_albedo.png             </albedo>
+            <normal>    /pbr/planks/planks_normal.png             </normal>
+            <metallic>  /pbr/planks/planks_metallic.png           </metallic>
+            <roughness> /pbr/planks/planks_roughness.png          </roughness>
+            <ao>        /pbr/planks/planks_ambient_occlusion.png  </ao>
+            <emissive>  /pbr/planks/planks_emissive.png           </emissive>
+        </archetype>
+    </mtldef>
+</mtllib>

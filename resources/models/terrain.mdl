@@ -1,0 +1,15 @@
+<mdllib>
+    <mdldef id="terrain0">
+        <mesh>/terrain.obj</mesh>
+        <materials>
+            <material mesh="0"> pbr-flat-brown </material>
+            <material mesh="1"> pbr-flat-grey  </material>
+        </materials>
+    </mdldef>
+
+    <mdldef id="terrain0">
+        <mesh>/terrain.obj</mesh>
+        <!-- use material names defined in mesh file -->
+        <materials inline="true"/>
+    </mdldef>
+</mdllib>

@@ -1,7 +1,10 @@
 package engine.core.gfx;
 
 import engine.Engine;
+import engine.core.gfx.texture.ITextureFilter;
 import engine.core.gfx.texture.Texture;
+import engine.core.gfx.texture.TextureFilterLinear;
+import engine.core.gfx.texture.TextureWrap;
 
 import java.util.ArrayList;
 
@@ -145,7 +148,7 @@ public class FrameBuffer
     this.addDepthTexture(this.width, this.height);
   }
 
-  public void addDepthTexture(int width, int height)
+  public void addDepthTexture(int width, int height, ITextureFilter filter)
   {
     this.bind();
 
@@ -160,8 +163,18 @@ public class FrameBuffer
       glReadBuffer(GL_NONE);
     }
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+    filter.apply(GL_TEXTURE_2D);
+
     this.unbind();
     this.depthTexture.unbind();
+  }
+
+  public void addDepthTexture(int width, int height)
+  {
+    this.addDepthTexture(width, height, new TextureFilterLinear());
   }
 
   public void addRenderbuffer(int type, int slot)

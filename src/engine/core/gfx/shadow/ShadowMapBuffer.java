@@ -2,7 +2,6 @@ package engine.core.gfx.shadow;
 
 import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
-import engine.core.gfx.batching.AssetManager;
 import engine.core.gfx.filter.GaussianBlurFilter;
 import engine.core.gfx.texture.*;
 import engine.core.rendering.GBuffer;
@@ -32,11 +31,6 @@ public class ShadowMapBuffer extends FrameBuffer
    * Directional shadow maps.
    */
   private Texture[] directional;
-
-  /**
-   * Directional shadow maps.
-   */
-  private Texture blur_temp;
 
   /**
    * Clears both the directional, as well as the point light shadow maps.
@@ -105,6 +99,6 @@ public class ShadowMapBuffer extends FrameBuffer
     }
     this.maps2D.flip();
 
-    this.addDepthTexture(Settings.geti("ShadowMapResolution"), Settings.geti("ShadowMapResolution"));
+    this.addDepthTexture(Settings.geti("ShadowMapResolution"), Settings.geti("ShadowMapResolution"), new TextureFilterBilinear());
   }
 }

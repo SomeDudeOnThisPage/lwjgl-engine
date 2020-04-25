@@ -59,7 +59,7 @@ public class DeferredRenderer extends Renderer
   private FXAAFilter fxaa;
   private Filter fadein;
   private Filter tonemap;
-  private ShadowBlitFilter blitter;
+  private Filter screen;
 
   public GBuffer getGBuffer()
   {
@@ -125,19 +125,7 @@ public class DeferredRenderer extends Renderer
   {
     scene.ecs().render(RenderStage.FORWARD_PASS);
 
-    /*this.pp.bind();
-    this.gbuffer.bind_pp();
-    //this.gbuffer.clear();
-    this.gbuffer.bind(this.pp);
-    this.pp.setUniform("color", GBuffer.UNIFORM_LIGHTING_TEXTURE_BUFFER_POSITION);
-
-    // draw six vertices
-    VertexArray.empty.bind();
-    VertexArray.postRenderPass();
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    VertexArray.preRenderPass();
-
-    this.pp.unbind();*/
+    // post processing now done in filter pass (tonemap filter)
     this.gbuffer.bind_pp();
   }
 
@@ -153,52 +141,15 @@ public class DeferredRenderer extends Renderer
     this.fbuffer.apply(this.tonemap);
     this.fbuffer.apply(this.fxaa);
     this.fbuffer.apply(this.fadein);
-    //this.fbuffer.apply(this.blitter);
 
     scene.ecs().render(RenderStage.FILTER_PASS);
 
-    glEnable(GL_DEPTH_TEST);
+    this.fbuffer.unbind();
 
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, this.fbuffer.getID());
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-    glReadBuffer(this.fbuffer.getCurrentAttachment());
-
-    glBlitFramebuffer(0, 0, this.fbuffer.getWidth(), this.fbuffer.getHeight(),
-      0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
-      GL_COLOR_BUFFER_BIT,
-      GL_LINEAR
-    );
-
-    if (Input.keyDown(GLFW_KEY_E))
-    {
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, this.sbuffer.getID());
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-      glReadBuffer(GL_COLOR_ATTACHMENT0);
-
-      glBlitFramebuffer(0, 0, this.sbuffer.getWidth(), this.sbuffer.getHeight(),
-        0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
-        GL_COLOR_BUFFER_BIT,
-        GL_NEAREST
-      );
-    }
-
-    if (Input.keyDown(GLFW_KEY_R))
-    {
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, this.sbuffer.getID());
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-      glReadBuffer(GL_COLOR_ATTACHMENT7);
-
-      glBlitFramebuffer(0, 0, this.sbuffer.getWidth(), this.sbuffer.getHeight(),
-        0, 0, Engine.window.getWidth(), Engine.window.getHeight(),
-        GL_COLOR_BUFFER_BIT,
-        GL_NEAREST
-      );
-    }
-    // debug frustum
-
+    // render final scene to screen framebuffer
+    this.fbuffer.getCurrentTexture().bind(Filter.FILTER_COLOR_BUFFER_BINDING);
+    this.screen.setUniform("u_color", Filter.FILTER_COLOR_BUFFER_BINDING);
+    this.screen.apply();
   }
 
   @Override
@@ -249,6 +200,7 @@ public class DeferredRenderer extends Renderer
     this.setupDefaultUniformBuffer();
 
     this.pp = Shader.getInstance("deferred/post_processing");
+    this.screen = new Filter("null");
 
     this.cbuffer = new FrameBuffer(Engine.window.getWidth(), Engine.window.getHeight());
     this.cbuffer.addTexture(
@@ -265,6 +217,5 @@ public class DeferredRenderer extends Renderer
     this.tonemap = new ToneMapFilter();
     this.fxaa = new FXAAFilter();
     this.fadein = new Filter("fadein");
-    this.blitter = new ShadowBlitFilter();
   }
 }

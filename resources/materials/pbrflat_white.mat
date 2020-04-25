@@ -1,5 +1,5 @@
-<matfile>
-    <matdef id="pbr-flat-white" archetype="pbr-flat-color">
+<mtllib>
+    <mtldef id="pbr-flat-white" archetype="MTL_ARCHETYPE_FLAT_COLOR">
         <properties>
             <transparency value="false"/>
         </properties>
@@ -11,5 +11,5 @@
             <ao>        0.20           </ao>
             <emissive>  0.00           </emissive>
         </archetype>
-    </matdef>
-</matfile>
+    </mtldef>
+</mtllib>

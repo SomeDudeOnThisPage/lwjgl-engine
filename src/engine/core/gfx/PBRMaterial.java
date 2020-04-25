@@ -1,6 +1,6 @@
 package engine.core.gfx;
 
-import engine.core.gfx.batching.AssetManager;
+import engine.core.assetmanager.AssetManager;
 import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.texture.*;
 
@@ -14,6 +14,8 @@ public abstract class PBRMaterial extends MaterialArchetype
   private static final int ROUGHNESS_MAP_SLOT = 3;
   private static final int AMBIENT_OCCLUSION_MAP_SLOT = 4;
   private static final int EMISSION_MAP_SLOT = 5;
+
+  private Texture[] textures;
 
   @Override
   public void bind()
@@ -36,30 +38,6 @@ public abstract class PBRMaterial extends MaterialArchetype
 
     this.textures[EMISSION_MAP_SLOT].bind(EMISSION_MAP_SLOT);
     this.shader.setUniform("u_pbr_material.emission", EMISSION_MAP_SLOT);
-  }
-
-  @Override
-  public void bind(Shader shader)
-  {
-    this.textures[ALBEDO_MAP_SLOT].bind(ALBEDO_MAP_SLOT);
-    shader.setUniform("u_pbr_material.albedo", ALBEDO_MAP_SLOT);
-
-    this.textures[NORMAL_MAP_SLOT].bind(NORMAL_MAP_SLOT);
-    shader.setUniform("u_pbr_material.normal", NORMAL_MAP_SLOT);
-
-    this.textures[METALLIC_MAP_SLOT].bind(METALLIC_MAP_SLOT);
-    shader.setUniform("u_pbr_material.metallic", METALLIC_MAP_SLOT);
-
-    this.textures[ROUGHNESS_MAP_SLOT].bind(ROUGHNESS_MAP_SLOT);
-    shader.setUniform("u_pbr_material.roughness", ROUGHNESS_MAP_SLOT);
-
-    this.textures[AMBIENT_OCCLUSION_MAP_SLOT].bind(AMBIENT_OCCLUSION_MAP_SLOT);
-    shader.setUniform("u_pbr_material.ambient_occlusion", AMBIENT_OCCLUSION_MAP_SLOT);
-
-    this.textures[EMISSION_MAP_SLOT].bind(EMISSION_MAP_SLOT);
-    shader.setUniform("u_pbr_material.emission", EMISSION_MAP_SLOT);
-
-    shader.setCurrentMaterial(this);
   }
 
   public PBRMaterial(String name, TextureWrap wrap)

@@ -17,11 +17,15 @@ uniform sampler2D color;
 
 void main()
 {
-  float emissive = texture2D(u_gbuffer.roughness_metallic_ao, i.uv).a;
-  vec3 albedo = texture2D(u_gbuffer.albedo, i.uv).rgb;
+  float emissive = texture(u_gbuffer.roughness_metallic_ao, i.uv).a;
+  vec3 albedo = texture(u_gbuffer.albedo, i.uv).rgb;
+  float ao = texture(u_gbuffer.albedo, i.uv).r;
 
   vec3 mapped = texture(color, i.uv).rgb;
-  mapped += emissive * albedo;
+  mapped += vec3(0.03f) * albedo * (0.1 * ao);
+
+  // todo: fix textured emissive bug
+  // mapped += emissive * albedo;
 
   // apply exposure
   mapped = tm_exposure(mapped);

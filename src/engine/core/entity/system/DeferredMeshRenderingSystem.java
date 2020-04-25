@@ -2,7 +2,7 @@ package engine.core.entity.system;
 
 import engine.core.entity.Entity;
 import engine.core.entity.component.*;
-import engine.core.gfx.batching.AssetManager;
+import engine.core.assetmanager.AssetManager;
 import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.VertexArray;
 import engine.core.rendering.RenderStage;
@@ -42,6 +42,7 @@ public class DeferredMeshRenderingSystem extends UpdateSystem implements IRender
   {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+
     for (Entity entity : entities)
     {
       VertexArray[] mesh = entity.get(MeshComponent.class).mesh;

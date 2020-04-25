@@ -1,0 +1,11 @@
+#include "filters/filter.h"
+
+in VS_OUT
+{
+  vec2 uv;
+} i;
+
+void main()
+{
+  gl_FragColor = vec4(texture(u_color, i.uv).rgb, 1.0f);
+}

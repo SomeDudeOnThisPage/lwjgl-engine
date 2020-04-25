@@ -53,7 +53,7 @@ public class EntityComponentSystem
 
     if (this.sm.get(system.getClass()).contains(entity))
     {
-      Logger.info("[ECS] attempted to add duplicate entity '" + entity.id() + "' to system '" + system.getClass().getSimpleName() + "'");
+      // Logger.info("[ECS] attempted to add duplicate entity '" + entity.id() + "' to system '" + system.getClass().getSimpleName() + "'");
       return;
     }
 
@@ -71,7 +71,7 @@ public class EntityComponentSystem
 
       if (hasRequired)
       {
-        Logger.info("[ECS] added entity " + entity.id() + " to system '" + system.getClass().getSimpleName() + "'");
+        // Logger.info("[ECS] added entity " + entity.id() + " to system '" + system.getClass().getSimpleName() + "'");
         this.sm.get(system.getClass()).add(entity);
         system.added(entity);
       }
@@ -121,6 +121,8 @@ public class EntityComponentSystem
       {
         this.mapEntitySystem(entity, system);
       }
+
+      Logger.info("[ECS] added entity '" + ((entity.name() != null) ? entity.name() : entity.id().toString()) + "'");
     }
 
     this.tba.clear();
@@ -133,7 +135,10 @@ public class EntityComponentSystem
    */
   public void addEntity(Entity entity)
   {
-    this.tba.add(entity);
+    if (!this.tba.contains(entity))
+    {
+      this.tba.add(entity);
+    }
   }
 
   /**

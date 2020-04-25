@@ -10,7 +10,7 @@ import engine.core.entity.component.TransformComponent;
 import engine.core.entity.component.lighting.PointLightSourceComponent;
 import engine.core.entity.component.physics.CollisionShapeComponent;
 import engine.core.entity.component.shadow.ShadowCasterComponent;
-import engine.core.gfx.batching.AssetManager;
+import engine.core.assetmanager.AssetManager;
 import engine.core.scene.Player;
 import engine.core.scene.Scene;
 import engine.core.scene.SceneGraph;
@@ -50,7 +50,14 @@ public class LightShooterComponent extends Behaviour
         ))
         .add(new ShadowCasterComponent());
 
-      light.get(MeshComponent.class).material[0] = AssetManager.getMaterial("pbr-flat-white");
+      if (Math.random() >= 0.5)
+      {
+        light.get(MeshComponent.class).material[0] = AssetManager.getMaterial("pbr-titanium");
+      }
+      else
+      {
+        light.get(MeshComponent.class).material[0] = AssetManager.getMaterial("pbr-planks");
+      }
 
       light.add(new CollisionShapeComponent(light, 1.0f, new btSphereShape(size)));
       light.get(CollisionShapeComponent.class).body.setInvInertiaDiagLocal(new Vector3(0.8f, 0.8f, 0.8f));

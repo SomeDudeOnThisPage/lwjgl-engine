@@ -12,30 +12,26 @@ import engine.core.entity.system.IRenderSystem;
 import engine.core.entity.system.UpdateSystem;
 import engine.core.gfx.Shader;
 import engine.core.gfx.VertexArray;
-import engine.core.gfx.batching.AssetManager;
 import engine.core.rendering.DeferredRenderer;
 import engine.core.rendering.RenderStage;
-import engine.core.scene.Player;
 import engine.core.scene.Scene;
 import engine.core.scene.SceneGraph;
 import engine.util.settings.Settings;
 import org.joml.*;
 
-import java.lang.Math;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_K;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_L;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL20C.glDrawBuffers;
-import static org.lwjgl.opengl.GL30C.GL_COLOR_ATTACHMENT0;
 
 public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
 {
   private ArrayList<Entity> enabled;
   private Shader shader;
 
-  private static Matrix4f lsm;
+  private static Matrix4f[] lsm;
 
   @Override
   public RenderStage priority() { return RenderStage.DEFERRED_SHADOW_PASS; }
@@ -51,9 +47,9 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
       };
   }
 
-  public static Matrix4f lsm()
+  public static Matrix4f lsm(int layer)
   {
-    return lsm;
+    return lsm[layer];
   }
 
   protected Vector3f getCenter(Vector3f min, Vector3f max, Matrix4f view)
@@ -69,8 +65,6 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
 
     return new Vector3f(transform.x, transform.y, transform.z);
   }
-
-  private float lol = 25.0f;
 
   @Override
   public void render(Scene scene, ArrayList<Entity> entities)
@@ -124,38 +118,22 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
 
     test.invert().frustumAabb(min, max);
 
-    float width = (max.x - min.x) / 2.0f;
+    float width  = (max.x - min.x) / 2.0f;
     float height = (max.y - min.y) / 2.0f;
     float length = (max.z - min.z) / 2.0f;
 
-    if (Input.keyDown(GLFW_KEY_L))
-    {
-      lol += 0.1f;
-    }
-    if (Input.keyDown(GLFW_KEY_K))
-    {
-      lol -= 0.1f;
-    }
-
     for (Entity entity : this.enabled)
     {
-      // construct orthographic light-space matrix
-      Vector3f position = scene.getPlayer().getCamera().getPosition().negate();
-
-      ShadowMapSystem.lsm.identity()
-        .ortho(-25, 25, -25, 25, -25, 25)
-        //.rotateLocalX(-1.04f)
-        //.translate(position);
+      ShadowMapSystem.lsm[layer].identity()
+        .ortho(-width, width, -height, height, -length, length)
         .lookAt(
-          //getCenter(min, max, scene.getPlayer().getCamera().getView()),
-          //new Vector3f(scene.getPlayer().getPosition()),
           new Vector3f(scene.getPlayer().getCamera().getPosition()),
-          new Vector3f(entity.get(DirectionalLightSourceComponent.class).direction).mul(1000.0f),
+          new Vector3f(entity.get(DirectionalLightSourceComponent.class).direction).normalize().mul(1000.0f),
           new Vector3f(0.0f, 1.0f, 0.0f)
         );
 
       this.shader.setUniform("u_layer", layer);
-      this.shader.setUniform("u_light_space", lsm);
+      this.shader.setUniform("u_light_space", lsm[layer]);
 
       glDisable(GL_CULL_FACE);
 
@@ -188,6 +166,10 @@ public class ShadowMapSystem extends UpdateSystem implements IRenderSystem
   {
     this.enabled = new ArrayList<>();
     this.shader = Shader.getInstance("depth");
-    lsm = new Matrix4f();
+    ShadowMapSystem.lsm = new Matrix4f[Settings.geti("Max2DShadowMaps")];
+    for (int i = 0; i < Settings.geti("Max2DShadowMaps"); i++)
+    {
+      ShadowMapSystem.lsm[i] = new Matrix4f().identity();
+    }
   }
 }

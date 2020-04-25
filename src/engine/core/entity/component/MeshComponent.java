@@ -1,7 +1,7 @@
 package engine.core.entity.component;
 
 import engine.core.gfx.VertexArray;
-import engine.core.gfx.batching.AssetManager;
+import engine.core.assetmanager.AssetManager;
 import engine.core.gfx.material.MaterialArchetype;
 
 import static org.lwjgl.opengl.GL11C.GL_BACK;

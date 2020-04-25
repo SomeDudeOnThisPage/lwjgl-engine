@@ -40,12 +40,12 @@ void main()
   {
     vec3 light = lighting_directional_pbr(u_directional_lights[i], F0, position, normal, albedo, roughness, metallic, dv_view);
 
-    if (i == 0 && u_directional_lights[i].shadow != -1)
+    if (u_directional_lights[i].shadow != -1)
     {
       // retreive shadow coordinate by multiplying with the lights' view space matrix
       vec4 shadow_coordinate = u_lsm * vec4(position, 1.0f);
 
-      float shadow = shd_shadow(shadow_coordinate, dot(normal, dv_light), shd_map(0));
+      float shadow = shd_shadow(shadow_coordinate, dot(normal, dv_light), shd_map(u_directional_lights[i].shadow));
       light *= (1.0f - shadow);
     }
 
@@ -53,7 +53,7 @@ void main()
   }
 
   // add ambient modifier (once)
-  lighting += vec3(0.03) * albedo * (0.1 * ao);
+  //lighting += vec3(0.03) * albedo * (0.1 * ao);
 
   gl_FragColor = vec4(lighting, 1.0f);
 }

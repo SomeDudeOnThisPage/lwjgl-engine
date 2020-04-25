@@ -1,0 +1,19 @@
+<mtllib>
+    <mtldef id="pbr-textured-missing" archetype="MTL_ARCHETYPE_TEXTURE">
+        <properties>
+            <transparency value="false"/>
+        </properties>
+
+        <archetype>
+            <wrap>CLAMP_TO_EDGE</wrap>
+            <filter bias="-0.1">TRILINEAR</filter>
+
+            <albedo>    /pbr/missing/missing_albedo.png             </albedo>
+            <normal>    /pbr/missing/missing_normal.png             </normal>
+            <metallic>  /pbr/missing/missing_metallic.png           </metallic>
+            <roughness> /pbr/missing/missing_roughness.png          </roughness>
+            <ao>        /pbr/missing/missing_ambient_occlusion.png  </ao>
+            <emissive>  /pbr/missing/missing_emissive.png           </emissive>
+        </archetype>
+    </mtldef>
+</mtllib>

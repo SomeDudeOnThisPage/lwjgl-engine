@@ -1,5 +1,6 @@
 package engine;
 
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
@@ -18,11 +19,11 @@ import engine.core.entity.component.shadow.ShadowSourceComponent;
 import engine.core.entity.system.*;
 import engine.core.entity.system.rendering.DirectionalLightingSystem;
 import engine.core.entity.system.rendering.SSRRenderingSystem;
-import engine.core.entity.system.rendering.debug.JBulletDebugRenderingSystem;
 import engine.core.entity.system.rendering.PointLightSystem;
 import engine.core.entity.system.rendering.shadow.ShadowCasterCollection;
 import engine.core.entity.system.rendering.shadow.ShadowMapSystem;
-import engine.core.gfx.batching.AssetManager;
+import engine.core.assetmanager.AssetManager;
+import engine.core.gfx.material.MaterialArchetype;
 import engine.core.gfx.material.PBRMaterialFlat;
 import engine.core.rendering.DeferredRenderer;
 import engine.core.scene.Player;
@@ -79,13 +80,14 @@ public class GameScene extends Scene
     AssetManager.loadMaterial("pbrflat_grey");
     AssetManager.loadMaterial("pbrflat_missing");
     AssetManager.loadMaterial("pbrflat_emissive_yellow");
+    AssetManager.loadMaterial("pbrtextured_missing");
 
     //
     // Testing: Create PBRMaterialFlat test materials manually.
     //
     PBRMaterialFlat white = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-white");
     PBRMaterialFlat yellow = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-emissive-yellow");
-    PBRMaterialFlat brown = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-brown");
+    MaterialArchetype brown = AssetManager.getMaterial("pbr-flat-brown");
     PBRMaterialFlat grey = (PBRMaterialFlat) AssetManager.getMaterial("pbr-flat-grey");
 
     Entity map = new Entity()
@@ -211,11 +213,7 @@ public class GameScene extends Scene
     motor.setLimitSoftness(0.0f);
     motor.setRestitution(0.0f);
 
-    //constraint.getTranslationalLimitMotor().setCurrentLimitError(new btVector3(0.0f, 0.0f, 0.0f));
-
     this.physics().world().addConstraint(constraint);
-
-    ecs().get(SSRRenderingSystem.class);
   }
 
   @Override

@@ -10,7 +10,6 @@ import engine.core.entity.system.rendering.shadow.ShadowMapSystem;
 import engine.core.gfx.Shader;
 import engine.core.gfx.UniformBuffer;
 import engine.core.gfx.VertexArray;
-import engine.core.gfx.shadow.ShadowMapBuffer;
 import engine.core.rendering.DeferredRenderer;
 import engine.core.rendering.GBuffer;
 import engine.core.rendering.RenderStage;
@@ -52,7 +51,6 @@ public class DirectionalLightingSystem extends UpdateSystem implements IRenderSy
     this.quad.setUniform("u_gbuffer.normal", GBuffer.UNIFORM_NORMAL_TEXTURE_BUFFER_POSITION);
     this.quad.setUniform("u_gbuffer.albedo", GBuffer.UNIFORM_ALBEDO_TEXTURE_BUFFER_POSITION);
     this.quad.setUniform("u_gbuffer.roughness_metallic_ao", GBuffer.UNIFORM_RGH_MTL_AO_TEXTURE_BUFFER_POSITION);
-    this.quad.setUniform("u_lsm", ShadowMapSystem.lsm());
 
     ((DeferredRenderer) scene.getRenderer()).getSBuffer().bind(this.quad);
 
@@ -68,11 +66,12 @@ public class DirectionalLightingSystem extends UpdateSystem implements IRenderSy
       Vector3f position = entity.get(TransformComponent.class).position;
       DirectionalLightSourceComponent data = entity.get(DirectionalLightSourceComponent.class);
 
-      this.lights.setUniform(position,        i * DIRECTIONAL_LIGHT_BYTES                                 );
-      this.lights.setUniform(data.direction,  i * DIRECTIONAL_LIGHT_BYTES +     UniformBuffer.OFFSET_VEC4F);
-      this.lights.setUniform(data.color,      i * DIRECTIONAL_LIGHT_BYTES + 2 * UniformBuffer.OFFSET_VEC4F);
-      this.lights.setUniform(data.shadowIndex,i * DIRECTIONAL_LIGHT_BYTES + 3 * UniformBuffer.OFFSET_VEC4F);
-      //this.lights.setUniform(data.clq,        i * DIRECTIONAL_LIGHT_BYTES + 3 * UniformBuffer.OFFSET_VEC4F);
+      this.quad.setUniform("u_lsm", ShadowMapSystem.lsm(data.shadowIndex));
+
+      this.lights.setUniform(position,         i * DIRECTIONAL_LIGHT_BYTES                                 );
+      this.lights.setUniform(data.direction,   i * DIRECTIONAL_LIGHT_BYTES +     UniformBuffer.OFFSET_VEC4F);
+      this.lights.setUniform(data.color,       i * DIRECTIONAL_LIGHT_BYTES + 2 * UniformBuffer.OFFSET_VEC4F);
+      this.lights.setUniform(data.shadowIndex, i * DIRECTIONAL_LIGHT_BYTES + 3 * UniformBuffer.OFFSET_VEC4F);
 
       i++;
     }

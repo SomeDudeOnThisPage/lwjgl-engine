@@ -85,6 +85,18 @@ public class FilterBuffer extends FrameBuffer
     }
   }
 
+  public Texture getCurrentTexture()
+  {
+    if (this.current)
+    {
+      return this.t0;
+    }
+    else
+    {
+      return this.t1;
+    }
+  }
+
   public FilterBuffer(int width, int height)
   {
     super(width, height);

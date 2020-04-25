@@ -1,14 +1,12 @@
 package engine;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import engine.core.*;
-import engine.core.gfx.batching.AssetManager;
+import engine.core.assetmanager.AssetManager;
 import engine.core.gfx.filter.Filter;
 import engine.core.gfx.FrameBuffer;
 import engine.core.gfx.Shader;
-import engine.core.gfx.batching.DeferredMeshBatcher;
 import engine.core.gui.GUI;
 import engine.core.gui.Label;
 import engine.core.scene.Scene;
