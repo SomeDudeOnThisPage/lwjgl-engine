@@ -6,6 +6,8 @@ import engine.core.rendering.GBuffer;
 import org.jetbrains.annotations.*;
 import org.w3c.dom.Element;
 
+import java.io.IOException;
+
 public abstract class MaterialArchetype
 {
   /**
@@ -41,7 +43,7 @@ public abstract class MaterialArchetype
    * @return This method should return {@code this}, the {@link MaterialArchetype} this method belongs to, in order to
    * enable factory-behaviour (chaining calls).
    */
-  public abstract MaterialArchetype load(@NotNull Element xml);
+  public abstract MaterialArchetype load(@NotNull Element xml) throws IOException;
 
   /**
    * This method should bind the {@link MaterialArchetype}s' uniform values to its' ({@link MaterialArchetype#shader})

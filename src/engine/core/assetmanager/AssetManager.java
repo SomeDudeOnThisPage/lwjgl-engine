@@ -46,14 +46,20 @@ public class AssetManager
   public static void loadMaterial(String xml)
   {
     Document doc = Resource.loadXML(Settings.gets("ResourceDirectory") + Settings.gets("MaterialDefinitionDirectory") + xml + ".mat");
-    assert doc != null;
-    NodeList materialsXML = doc.getElementsByTagName("mtldef");
-    for (int i = 0; i < materialsXML.getLength(); i++)
+
+    if (doc == null)
     {
-      Node materialXML = materialsXML.item(i);
-      if (materialXML.getNodeType() == Node.ELEMENT_NODE)
+      Logger.error("[ASSETMANAGER] cannot load material library " + xml + " - file is corrupted or missing");
+      return;
+    }
+
+    NodeList materials = doc.getElementsByTagName("mtldef");
+    for (int i = 0; i < materials.getLength(); i++)
+    {
+      Node material = materials.item(i);
+      if (material.getNodeType() == Node.ELEMENT_NODE)
       {
-        Element materialElement = (Element) materialXML;
+        Element materialElement = (Element) material;
         String name = materialElement.getAttribute("id");
         String archetype = materialElement.getAttribute("archetype");
 
@@ -62,18 +68,25 @@ public class AssetManager
         boolean transparency = Boolean.valueOf(properties.getElementsByTagName("transparency").item(0).getTextContent());
 
         NodeList archetypeDefinitions = materialElement.getElementsByTagName("archetype");
-        switch (archetype)
+        try
         {
-          case "MTL_ARCHETYPE_FLAT_COLOR":
-            MaterialArchetype flat = new PBRMaterialFlat().load((Element) archetypeDefinitions.item(0));
-            flat.properties().transparency = transparency;
-            AssetManager.loadMaterial(name, flat);
-            break;
-          case "MTL_ARCHETYPE_TEXTURE":
-            MaterialArchetype textured = new PBRMaterialTextured().load((Element) archetypeDefinitions.item(0));
-            textured.properties().transparency = transparency;
-            AssetManager.loadMaterial(name, textured);
-            break;
+          switch (archetype)
+          {
+            case "MTL_ARCHETYPE_FLAT_COLOR":
+              MaterialArchetype flat = new PBRMaterialFlat().load((Element) archetypeDefinitions.item(0));
+              flat.properties().transparency = transparency;
+              AssetManager.loadMaterial(name, flat);
+              break;
+            case "MTL_ARCHETYPE_TEXTURE":
+              MaterialArchetype textured = new PBRMaterialTextured().load((Element) archetypeDefinitions.item(0));
+              textured.properties().transparency = transparency;
+              AssetManager.loadMaterial(name, textured);
+              break;
+          }
+        }
+        catch(Exception e)
+        {
+          Logger.error("[ASSETMANAGER] could not load material data for material '" + name + "' - " + e.getMessage());
         }
       }
     }

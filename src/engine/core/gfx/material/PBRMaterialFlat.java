@@ -1,8 +1,11 @@
 package engine.core.gfx.material;
 
 import engine.core.assetmanager.AssetManager;
+import engine.util.XMLCoder;
 import org.joml.Vector3f;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
 
 public class PBRMaterialFlat extends MaterialArchetype
 {
@@ -15,14 +18,10 @@ public class PBRMaterialFlat extends MaterialArchetype
   private float emissive;
 
   @Override
-  public MaterialArchetype load(Element xml)
+  public MaterialArchetype load(Element xml) throws IOException
   {
     // get color values from color tag as string array
-    String[] colors = xml.getElementsByTagName("color")
-      .item(0)
-      .getTextContent()
-      .trim()
-      .split("\\s+");
+    String[] colors = XMLCoder.gets(xml, "color").split("\\s+");
 
     // read color data from string array
     Vector3f color = new Vector3f(
@@ -32,10 +31,10 @@ public class PBRMaterialFlat extends MaterialArchetype
     );
 
     // read material data from XML elements
-    float metallic  = Float.valueOf(xml.getElementsByTagName("metallic")  .item(0).getTextContent().trim());
-    float roughness = Float.valueOf(xml.getElementsByTagName("roughness") .item(0).getTextContent().trim());
-    float ao        = Float.valueOf(xml.getElementsByTagName("ao")        .item(0).getTextContent().trim());
-    float emissive  = Float.valueOf(xml.getElementsByTagName("emissive")  .item(0).getTextContent().trim());
+    float metallic  = Float.valueOf(XMLCoder.gets(xml, "metallic" ));
+    float roughness = Float.valueOf(XMLCoder.gets(xml, "roughness"));
+    float ao        = Float.valueOf(XMLCoder.gets(xml, "ao"       ));
+    float emissive  = Float.valueOf(XMLCoder.gets(xml, "emissive" ));
 
     // set material data of this material
     this.color.set(color);

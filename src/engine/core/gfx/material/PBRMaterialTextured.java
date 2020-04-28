@@ -2,8 +2,12 @@ package engine.core.gfx.material;
 
 import engine.core.assetmanager.AssetManager;
 import engine.core.gfx.texture.*;
+import engine.util.XMLCoder;
+import engine.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
 
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL12C.GL_CLAMP_TO_EDGE;
@@ -22,19 +26,19 @@ public class PBRMaterialTextured extends MaterialArchetype
   private Texture[] textures;
 
   @Override
-  public MaterialArchetype load(@NotNull Element xml)
+  public MaterialArchetype load(@NotNull Element xml) throws IOException
   {
-    String albedo     = xml.getElementsByTagName("albedo")    .item(0).getTextContent().trim();
-    String normal     = xml.getElementsByTagName("normal")    .item(0).getTextContent().trim();
-    String metallic   = xml.getElementsByTagName("metallic")  .item(0).getTextContent().trim();
-    String roughness  = xml.getElementsByTagName("roughness") .item(0).getTextContent().trim();
-    String ao         = xml.getElementsByTagName("ao")        .item(0).getTextContent().trim();
-    String emissive   = xml.getElementsByTagName("emissive")  .item(0).getTextContent().trim();
+    String albedo     = XMLCoder.gets(xml, "albedo"   );
+    String normal     = XMLCoder.gets(xml, "normal"   );
+    String metallic   = XMLCoder.gets(xml, "metallic" );
+    String roughness  = XMLCoder.gets(xml, "roughness");
+    String ao         = XMLCoder.gets(xml, "ao"       );
+    String emissive   = XMLCoder.gets(xml, "emissive" );
 
     TextureWrap wrap;
     ITextureFilter filter;
 
-    switch(xml.getElementsByTagName("wrap").item(0).getTextContent().trim().toLowerCase())
+    switch (XMLCoder.gets(xml, "wrap").toLowerCase())
     {
       case "clamp_to_edge":
         wrap = new TextureWrap(GL_CLAMP_TO_EDGE);
@@ -47,16 +51,10 @@ public class PBRMaterialTextured extends MaterialArchetype
         break;
     }
 
-    switch(xml.getElementsByTagName("filter").item(0).getTextContent().trim().toLowerCase())
+    switch (XMLCoder.gets(xml, "filter").toLowerCase())
     {
       case "trilinear":
-        float bias = -0.1f;
-
-        if (xml.getElementsByTagName("filter").item(0).getAttributes().getLength() > 0)
-        {
-          bias = Float.valueOf(xml.getElementsByTagName("filter").item(0).getAttributes().getNamedItem("bias").getTextContent());
-        }
-
+        float bias = Float.valueOf(XMLCoder.geta(xml, "filter", "bias"));
         filter = new TextureFilterTrilinear(bias);
         break;
       case "bilinear":

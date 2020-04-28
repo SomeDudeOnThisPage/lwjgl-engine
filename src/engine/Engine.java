@@ -17,11 +17,19 @@ import engine.util.ExceptionDialog;
 import engine.util.logging.Logger;
 import engine.util.settings.EngineInitialization;
 import engine.util.settings.Settings;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 public class Engine
 {
+  public static final class Constants
+  {
+    public static final Vector3f DIRECTION_UP       = new Vector3f(0.0f, 1.0f, 0.0f);
+    public static final Vector3f DIRECTION_RIGHT    = new Vector3f(1.0f, 0.0f, 0.0f);
+    public static final Vector3f DIRECTION_FORWARD  = new Vector3f(0.0f, 0.0f, 1.0f);
+  }
+
   /** Total thread counter. */
   public static int THREADS = 1;
 
