@@ -1,0 +1,3 @@
+<assets>
+    <archetype type="phong_color" program="phong_color" class="engine.gfx.material.MaterialPhongColor" />
+</assets>

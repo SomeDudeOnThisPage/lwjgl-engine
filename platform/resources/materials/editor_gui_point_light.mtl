@@ -1,0 +1,9 @@
+<assets>
+  <texture2d id="editor.pointlight">
+    <source>platform/resources/textures/editor/ui/point_light.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="bilinear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+</assets>

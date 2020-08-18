@@ -1,0 +1,38 @@
+<assets>
+  <!-- create attached textures -->
+  <texture2d id="gbuffer.phong.position">
+    <source>null</source>
+    <size   x="auto" y="auto"                           />
+    <format internal="RGB32F" format="RGB" type="float" />
+    <filter type="linear"                               />
+    <wrap   wrap="border"                               />
+    <slot>0</slot>
+  </texture2d>
+
+  <texture2d id="gbuffer.phong.normal">
+    <source>null</source>
+    <size   x="auto" y="auto"                           />
+    <format internal="RGB32F" format="RGB" type="float" />
+    <filter type="linear"                               />
+    <wrap   wrap="border"                               />
+    <slot>1</slot>
+  </texture2d>
+
+  <texture2d id="gbuffer.phong.diffuse">
+    <source>null</source>
+    <size   x="auto" y="auto"                           />
+    <format internal="RGB32F" format="RGB" type="float" />
+    <filter type="linear"                               />
+    <wrap   wrap="border"                               />
+    <slot>2</slot>
+  </texture2d>
+
+  <!-- gbuffer with texture attachments that hold data for the phong lighting model -->
+  <framebuffer id="gbuffer.phong">
+    <width>-1</width>
+    <height>-1</height>
+    <texture slot="0">gbuffer.phong.position</texture>
+    <texture slot="1">gbuffer.phong.normal</texture>
+    <texture slot="2">gbuffer.phong.diffuse</texture>
+  </framebuffer>
+</assets>

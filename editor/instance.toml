@@ -1,0 +1,41 @@
+[INSTANCE_BASE_SCENE_INSTANCE]
+OVERRIDE              = true
+CC_ASSET_LOADING      = true
+KEEP_CON              = false
+
+[instance]
+title = "Editor"
+scene = "editor.DevelopmentScene3D"
+
+[instance.path]
+root = "editor/"
+config = "cfg/"
+resources = "resources/"
+
+[assets]
+reloading = true
+
+[console]
+# config files listed here will be executed AFTER convars and concommands set in this file have been registered
+autoexec = [
+  "editor.cfg",
+  "imgui_editor.cfg"
+]
+
+# convars registered here will be initialized BEFORE this scene instance has loaded
+[console.convar]
+  [console.convar.editor_console]
+  type    = "boolean"
+  default = [false]
+
+  [console.convar.editor_camera_speed]
+  type    = "float"
+  default = [5.00]
+
+  [console.convar.editor_camera_sensitivity]
+  type    = "vec2f"
+  default = [3.75, 3.75]
+
+[console.command]
+  [console.command.imgui_add]
+  method = "editor.Commands#imgui_add"

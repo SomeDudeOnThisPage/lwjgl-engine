@@ -1,0 +1,9 @@
+<assets>
+  <audio id="handinhand">
+    <source>platform/resources/audio/test.ogg</source>
+  </audio>
+
+  <audio id="diehorderennt">
+    <source>platform/resources/audio/Die Horde Rennt (Technobase fm).ogg</source>
+  </audio>
+</assets>

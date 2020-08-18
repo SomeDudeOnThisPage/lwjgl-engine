@@ -1,0 +1,11 @@
+<assets reloadable="true">
+  <program id="phong_color">
+    <vs>test.vs</vs>
+    <fs>test.fs</fs>
+  </program>
+
+  <program id="phong.textured">
+    <vs>phong_textured.vs</vs>
+    <fs>phong_textured.fs</fs>
+  </program>
+</assets>

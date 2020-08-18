@@ -1,0 +1,23 @@
+title = "engine"
+
+[path]
+  root       = "platform"
+  config     = "cfg"
+  resources  = "resources"
+  resource_folders = [
+    "materials",
+    "fonts",
+    "models",
+    "shaders",
+    "textures",
+    "pipeline"
+  ]
+
+[config]
+exec = ["engine", "autoexec", "imgui_editor"]
+
+[asset]
+include = ["prefabs/editor"]
+
+[gui]
+imgui = true

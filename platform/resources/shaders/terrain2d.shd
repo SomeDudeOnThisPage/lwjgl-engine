@@ -1,0 +1,6 @@
+<assets reloadable="true">
+  <program id="terrain2d">
+    <vs>terrain2d.vs</vs>
+    <fs>terrain2d.fs</fs>
+  </program>
+</assets>

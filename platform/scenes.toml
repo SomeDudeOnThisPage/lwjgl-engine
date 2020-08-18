@@ -1,0 +1,2 @@
+default = "engine.Splash"
+editor = "editor.DevelopmentScene3D"

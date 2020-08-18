@@ -1,0 +1,56 @@
+<assets>
+  <texture2d id="wood.pbr.albedo">
+    <source>%RESOURCES%/%TEXTURES%/pbr/wood_albedo.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="SRGB" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <texture2d id="wood.pbr.normal">
+    <source>%RESOURCES%/%TEXTURES%/pbr/wood_normal.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <texture2d id="wood.pbr.metallic">
+    <source>%RESOURCES%/%TEXTURES%/pbr/wood_metallic.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <texture2d id="wood.pbr.roughness">
+    <source>%RESOURCES%/%TEXTURES%/pbr/wood_roughness.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <texture2d id="wood.pbr.ao">
+    <source>%RESOURCES%/%TEXTURES%/pbr/wood_ao.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <material id="wood.pbr" archetype="pbr.textured">
+    <properties>
+      <transparency>false</transparency>
+    </properties>
+
+    <archetype>
+      <albedo>wood.pbr.albedo</albedo>
+      <normal>wood.pbr.normal</normal>
+      <metallic>wood.pbr.metallic</metallic>
+      <roughness>wood.pbr.roughness</roughness>
+      <ao>wood.pbr.ao</ao>
+      <emissive />
+    </archetype>
+  </material>
+</assets>

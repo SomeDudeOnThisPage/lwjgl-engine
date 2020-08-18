@@ -1,0 +1,27 @@
+<assets>
+  <!-- create collision shape inline -->
+  <mesh id="cube" subnames="false" cshape="true">
+    <source>platform/resources/models/cube.obj</source>
+    <meshes>1</meshes>
+  </mesh>
+
+  <!-- create collision shape explicitly (without creating an entry in the mesh asset family) -->
+  <cshape id="cube" subnames="false">
+    <source>platform/resources/models/cube.obj</source>
+    <meshes>1</meshes>
+  </cshape>
+
+  <!-- create collision shape explicitly (without creating an entry in the mesh asset family) -->
+  <cshape id="terrain" subnames="false">
+    <source>platform/resources/models/terrain.obj</source>
+    <meshes>1</meshes>
+  </cshape>
+
+  <!-- load a prefab with the id "cube" - note that prefabs (entities) are assets too! -->
+  <prefab id="cube">
+    <component id="transform">default</component>      <!-- default initial transform data -->
+    <component id="mesh"><mesh>cube</mesh></component> <!-- mesh id of loaded asset -->
+    <component id="material">wood.phong</component>    <!-- material id of loaded asset -->
+    <component id="cshape">cube</component>            <!-- material id of loaded cshape -->
+  </prefab>
+</assets>

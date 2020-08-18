@@ -1,0 +1,29 @@
+<assets reloadable="true">
+  <material id="red.phong" archetype="phong_color">
+    <ambient>0.1 0.1 0.1</ambient>
+    <diffuse>1.0 0.0 0.0</diffuse>
+    <specular>1.0 0.0 0.0</specular>
+    <shininess>0.5</shininess>
+  </material>
+
+  <material id="green.phong" archetype="phong_color">
+    <ambient>0.1 0.1 0.1</ambient>
+    <diffuse>0.0 1.0 0.0</diffuse>
+    <specular>0.0 1.0 0.0</specular>
+    <shininess>0.5</shininess>
+  </material>
+
+  <material id="blue.phong" archetype="phong_color">
+    <ambient>0.1 0.1 0.1</ambient>
+    <diffuse>0.0 0.0 1.0</diffuse>
+    <specular>0.0 0.0 1.0</specular>
+    <shininess>0.5</shininess>
+  </material>
+
+  <material id="white.plastic" archetype="phong_color">
+    <ambient>0.1 0.1 0.1</ambient>
+    <diffuse>0.55 0.55 0.55</diffuse>
+    <specular>0.70 0.70 0.70</specular>
+    <shininess>0.25</shininess>
+  </material>
+</assets>

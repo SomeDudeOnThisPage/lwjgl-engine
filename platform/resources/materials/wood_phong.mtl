@@ -1,0 +1,24 @@
+<assets>
+  <texture2d id="wood.diffuse">
+    <source>platform/resources/textures/wood.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <texture2d id="wood.specular">
+    <source>platform/resources/textures/wood.png</source>
+    <size   x="auto" y="auto"                             />
+    <format internal="RGBA" format="RGBA" type="ubyte"    />
+    <filter type="linear"                                 />
+    <wrap   wrap="border"                                 />
+  </texture2d>
+
+  <material id="wood.phong" archetype="phong_textured">
+    <ambient>0.001 0.001 0.001</ambient>
+    <diffuse>wood.diffuse</diffuse>
+    <specular>wood.specular</specular>
+    <shininess>0.5</shininess>
+  </material>
+</assets>
